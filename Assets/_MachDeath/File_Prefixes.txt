@@ -1,0 +1,13 @@
+List of all the file prefixes
+
+When a new type of file is added update this list
+
+Prefabs: Prfb
+
+Scenes: Scn
+
+Models: Mdl
+
+AnCtr: Animation Controller
+
+Anim: Animation
