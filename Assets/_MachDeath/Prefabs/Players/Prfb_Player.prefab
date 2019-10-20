@@ -99,6 +99,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseSensitivity: 0.5
+  maxCameraAng: 360
+  m_inverted: 1
   playerBody: {fileID: 4419650568852719272}
   m_camera: {fileID: 4419650569349292680}
   m_baseMovementSpeed: 10
@@ -135,12 +137,13 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_leapTime: 1
   m_leapSpeedBoostBase: 15
-  m_leapSpeedBoostIncrease: 5
+  m_leapSpeedBoostIncrease: 10
   m_leapSpeedBoostCountMax: 3
   m_leapBufferTime: 0.5
   m_currentLeapTime: 0
   m_leapingTimer: 0
   m_leapCount: 1
+  m_wallRunStickDistance: 3
   m_impact: {x: 0, y: 0, z: 0}
   m_rb: {fileID: 4419650568852719274}
   shit: 30
