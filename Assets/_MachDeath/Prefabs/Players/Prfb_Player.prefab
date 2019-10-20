@@ -115,7 +115,14 @@ MonoBehaviour:
   shit: 30
   m_graceTime: 0.3
   m_jumpBufferTime: 0.3
-  m_slopeForce: 5
+  m_leapCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_leapTime: 0
+  m_leapSpeedBoostMax: 0
 --- !u!136 &4419650568852719273
 CapsuleCollider:
   m_ObjectHideFlags: 0

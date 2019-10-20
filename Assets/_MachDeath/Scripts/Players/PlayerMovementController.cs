@@ -109,6 +109,11 @@ public class PlayerMovementController : MonoBehaviour
 
         CalculateGroundPhysics();
         CameraRotation();
+
+        if (m_characterController.collisionFlags == CollisionFlags.Sides)
+        {
+            Debug.Log("Side col");
+        }
     }
 
     private void CalculateGroundPhysics()
