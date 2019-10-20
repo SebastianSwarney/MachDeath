@@ -102,10 +102,8 @@ public class PlayerMovementController : MonoBehaviour
 
         if (!IsGrounded())
         {
-            //WallRunRay();
+            WallRunRay();
         }
-
-        
 
         m_characterController.Move(m_velocity * Time.deltaTime);
 
