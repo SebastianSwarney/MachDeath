@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 4419650568852719279}
   - component: {fileID: 4419650568852719273}
   - component: {fileID: 4419650568852719274}
+  - component: {fileID: 1106223046}
   m_Layer: 0
   m_Name: Prfb_Player
   m_TagString: Untagged
@@ -97,32 +98,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62b8ec2b302e7c4aac49b90bc8c12a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontalInputName: Horizontal
-  verticalInputName: Vertical
-  mouseXInputName: Mouse X
-  mouseYInputName: Mouse Y
-  mouseSensitivity: 50
-  m_walkingMovementSpeed: 10
-  m_runningMovementSpeeed: 30
+  mouseSensitivity: 0.5
+  playerBody: {fileID: 4419650568852719272}
+  m_camera: {fileID: 4419650569349292680}
+  m_baseMovementSpeed: 10
+  m_runningMovementSpeeed: 10
   m_accelerationTime: 0.1
   m_maxJumpHeight: 5
   m_minJumpHeight: 1
   m_timeToJumpApex: 0.5
-  playerBody: {fileID: 4419650568852719272}
-  m_camera: {fileID: 4419650569349292680}
-  m_impact: {x: 0, y: 0, z: 0}
-  m_rb: {fileID: 4419650568852719274}
-  shit: 30
   m_graceTime: 0.3
-  m_jumpBufferTime: 0.3
+  m_jumpBufferTime: 0.5
   m_leapCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 3
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_leapTime: 0
-  m_leapSpeedBoostMax: 0
+  m_leapTime: 1
+  m_leapSpeedBoostBase: 15
+  m_leapSpeedBoostIncrease: 5
+  m_leapSpeedBoostCountMax: 3
+  m_leapBufferTime: 0.5
+  m_currentLeapTime: 0
+  m_leapingTimer: 0
+  m_leapCount: 1
+  m_impact: {x: 0, y: 0, z: 0}
+  m_rb: {fileID: 4419650568852719274}
+  shit: 30
 --- !u!136 &4419650568852719273
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -153,6 +174,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &1106223046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419650568852719188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 418ef76a955c8bb479efdd80fa79a780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_playerId: 0
 --- !u!1 &4419650568909376681
 GameObject:
   m_ObjectHideFlags: 0

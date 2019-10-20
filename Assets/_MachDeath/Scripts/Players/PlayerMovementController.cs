@@ -1,19 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class PlayerControllerEvent : UnityEvent { }
+
 
 public class PlayerMovementController : MonoBehaviour
 {
-    public string horizontalInputName;
-    public string verticalInputName;
-
-    public string mouseXInputName, mouseYInputName;
     public float mouseSensitivity;
+    public float maxCameraAng;
+    public bool m_inverted;
+    public Transform playerBody;
+    public Camera m_camera;
 
-    public float m_walkingMovementSpeed;
+    private float xAxisClamp;
 
+    public float m_baseMovementSpeed;
     public float m_runningMovementSpeeed;
-
     public float m_accelerationTime;
 
     private float m_currentMovementSpeed;
@@ -22,28 +27,10 @@ public class PlayerMovementController : MonoBehaviour
     public float m_minJumpHeight = 1;
     public float m_timeToJumpApex = .4f;
 
+    private int m_jumpCount;
     private float m_gravity;
     private float m_maxJumpVelocity;
     private float m_minJumpVelocity;
-
-
-    private Vector3 m_velocity;
-    private Vector3 m_velocitySmoothing;
-
-    private CharacterController m_characterController;
-    public Transform playerBody;
-    public Camera m_camera;
-
-    private float xAxisClamp;
-    private bool isJumping;
-
-    public Vector3 m_impact;
-
-    public Rigidbody m_rb;
-
-    public float shit;
-
-    private bool m_isStunned;
 
     public float m_graceTime;
     private float m_graceTimer;
@@ -51,13 +38,34 @@ public class PlayerMovementController : MonoBehaviour
     public float m_jumpBufferTime;
     private float m_jumpBufferTimer;
 
-    private bool m_isLanded;
-
-    private bool m_isRunning;
-
     public AnimationCurve m_leapCurve;
     public float m_leapTime;
-    public float m_leapSpeedBoostMax;
+    public float m_leapSpeedBoostBase;
+    public float m_leapSpeedBoostIncrease;
+    public int m_leapSpeedBoostCountMax;
+    public float m_leapBufferTime;
+
+    public float m_currentLeapTime;
+    public float m_leapingTimer;
+    private float m_leapBufferTimer;
+    public int m_leapCount;
+
+    public float m_wallRunStickDistance;
+
+    private bool m_isLanded;
+    private bool m_isRunning;
+    private bool m_isLeaping;
+    private Vector3 m_velocity;
+    private Vector3 m_velocitySmoothing;
+    private CharacterController m_characterController;
+
+    public Vector3 m_impact;
+    public Rigidbody m_rb;
+    public float shit;
+    private bool m_isStunned;
+
+    private Vector2 m_movementInput;
+    private Vector2 m_lookInput;
 
     private void Start()
     {
@@ -67,6 +75,10 @@ public class PlayerMovementController : MonoBehaviour
 
         LockCursor();
         xAxisClamp = 0.0f;
+
+        m_currentMovementSpeed = m_baseMovementSpeed;
+
+        m_leapBufferTimer = m_leapBufferTime;
     }
 
     private void OnValidate()
@@ -79,40 +91,52 @@ public class PlayerMovementController : MonoBehaviour
         InputBuffering();
         CalculateVelocity();
 
-
         if (Input.GetMouseButtonDown(0))
         {
             OnJumpInputDown();
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            OnJumpInputDown();
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetMouseButtonUp(0))
         {
             OnJumpInputUp();
         }
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (!IsGrounded())
         {
-            m_currentMovementSpeed = m_runningMovementSpeeed;
-            m_isRunning = true;
+            //WallRunRay();
         }
-        else
-        {
-            m_currentMovementSpeed = m_walkingMovementSpeed;
-            m_isRunning = false;
-        }
+
+        
 
         m_characterController.Move(m_velocity * Time.deltaTime);
 
         CalculateGroundPhysics();
         CameraRotation();
+    }
 
-        if (m_characterController.collisionFlags == CollisionFlags.Sides)
+    public void SetMovementInput(Vector2 p_input)
+    {
+        m_movementInput = p_input;
+    }
+
+    public void SetLookInput(Vector2 p_input)
+    {
+        m_lookInput = p_input;
+    }
+
+    private void WallRunRay()
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(m_characterController.transform.position, -m_characterController.transform.right, out hit, m_wallRunStickDistance))
         {
-            Debug.Log("Side col");
+            if (Vector3.Dot(hit.normal, Vector3.up) == 0)
+            {
+                Vector3 wallVector = Vector3.Cross(hit.normal, Vector3.up);
+
+                m_velocity = wallVector * m_baseMovementSpeed;
+            }
+
+            Debug.DrawLine(m_characterController.transform.position, hit.point);
         }
     }
 
@@ -134,6 +158,22 @@ public class PlayerMovementController : MonoBehaviour
                 m_characterController.Move(new Vector3(0, -(hit.distance), 0));
             }
         }
+
+        if (IsGrounded() && !m_isLanded)
+        {
+            Landed();
+        }
+
+        if (!IsGrounded())
+        {
+            m_isLanded = false;
+        }
+    }
+
+    private void Landed()
+    {
+        m_isLanded = true;
+        m_leapBufferTimer = 0;
     }
 
     private void CalculateJump()
@@ -147,7 +187,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_velocity.y += m_gravity * Time.deltaTime;
 
-        Vector2 input = new Vector2(Input.GetAxisRaw(horizontalInputName), Input.GetAxisRaw(verticalInputName));
+        Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
 
         Vector3 forwardMovement = transform.forward * input.y;
         Vector3 rightMovement = transform.right * input.x;
@@ -175,31 +215,57 @@ public class PlayerMovementController : MonoBehaviour
             m_jumpBufferTimer -= Time.deltaTime;
         }
 
+        if (BunnyHop())
+        {
+            RunLeap();
+            JumpMaxVelocity();
+        }
+
+        if (IsGrounded())
+        {
+            m_leapBufferTimer += Time.deltaTime;
+        }
+
+        if (IsGrounded() && m_leapBufferTimer > m_leapBufferTime)
+        {
+            m_leapCount = 0;
+        }
+    }
+
+    private bool BunnyHop()
+    {
         if (m_jumpBufferTimer > 0 && m_characterController.collisionFlags == CollisionFlags.Below)
         {
             m_jumpBufferTimer = 0;
-
-            JumpMaxVelocity();
-
+            return true;
         }
+
+        return false;
     }
 
     public void OnJumpInputDown()
     {
-        if (m_isRunning)
+        if (m_leapBufferTimer <= m_leapBufferTime && IsGrounded())
         {
-            StartCoroutine(JumpLeap());
+            RunLeap();
+            m_leapBufferTimer = 0;
         }
 
-        m_jumpBufferTimer = m_jumpBufferTime;
+        if (!IsGrounded())
+        {
+            m_jumpBufferTimer = m_jumpBufferTime;
+        }
 
-        if (!(m_characterController.collisionFlags == CollisionFlags.Below) && m_graceTimer <= m_graceTime && m_velocity.y <= 0)
+        if (IsGrounded())
+        {
+            //m_leapCount = 0;
+            JumpMaxVelocity();
+        }
+
+        if (!IsGrounded() && m_graceTimer <= m_graceTime && m_velocity.y <= 0)
         {
             m_graceTimer = m_graceTime;
             JumpMaxVelocity();
-
-
-
         }
     }
 
@@ -223,20 +289,63 @@ public class PlayerMovementController : MonoBehaviour
         m_velocity.y = m_minJumpVelocity;
     }
 
+    private void RunLeap()
+    {
+        m_leapCount++;
+
+        if (m_isLeaping)
+        {
+            //m_currentLeapTime += m_leapTime;
+            m_leapingTimer = 0;
+        }
+        else
+        {
+            StartCoroutine(JumpLeap());
+        }
+    }
+
     private IEnumerator JumpLeap()
     {
-        float t = 0;
+        m_isLeaping = true;
+        m_leapingTimer = 0;
 
-        while (t < m_leapTime)
+        m_currentLeapTime = m_leapTime;
+
+        float m_leapSpeed;
+
+        while (m_leapingTimer < m_currentLeapTime)
         {
-            t += Time.deltaTime;
+            m_leapingTimer += Time.deltaTime;
 
-            float progress = m_leapCurve.Evaluate(t / m_leapTime);
+            if (m_leapCount <= m_leapSpeedBoostCountMax)
+            {
+                m_leapSpeed = m_leapSpeedBoostBase + (m_leapSpeedBoostIncrease * m_leapCount);
+            }
+            else
+            {
+                m_leapSpeed = m_leapSpeedBoostBase + (m_leapSpeedBoostIncrease * m_leapSpeedBoostCountMax);
+            }
 
-            m_currentMovementSpeed = Mathf.Lerp(m_currentMovementSpeed, m_leapSpeedBoostMax, progress);
+            float progress = m_leapCurve.Evaluate(m_leapingTimer / m_currentLeapTime);
+
+            m_currentMovementSpeed = Mathf.Lerp(m_currentMovementSpeed, m_leapSpeed, progress);
 
             yield return null;
         }
+
+        m_currentMovementSpeed = m_baseMovementSpeed;
+
+        m_isLeaping = false;
+    }
+
+    private bool IsGrounded()
+    {
+        if (m_characterController.collisionFlags == CollisionFlags.Below)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private bool OnSlope()
@@ -283,26 +392,36 @@ public class PlayerMovementController : MonoBehaviour
 
     private void CameraRotation()
     {
-        float mouseX = Input.GetAxis(mouseXInputName) * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis(mouseYInputName) * mouseSensitivity * Time.deltaTime;
+        //Get the inputs for the camera
+        Vector2 cameraInput = new Vector2(m_lookInput.y * ((m_inverted) ? -1 : 1), m_lookInput.x);
 
-        xAxisClamp += mouseY;
+        //Rotate the player on the y axis (left and right)
+        transform.Rotate(Vector3.up, cameraInput.y * (mouseSensitivity));
 
-        if (xAxisClamp > 90.0f)
+        float cameraXAng = m_camera.transform.eulerAngles.x;
+
+
+
+        //Stops the camera from rotating, if it hits the resrictions
+        if (cameraInput.x < 0 && cameraXAng > 360 - maxCameraAng || cameraInput.x < 0 && cameraXAng < maxCameraAng + 10)
         {
-            xAxisClamp = 90.0f;
-            mouseY = 0.0f;
-            ClampXAxisRotationToValue(270.0f);
+            m_camera.transform.Rotate(Vector3.right, cameraInput.x * (mouseSensitivity));
+
         }
-        else if (xAxisClamp < -90.0f)
+        else if (cameraInput.x > 0 && cameraXAng > 360 - maxCameraAng - 10 || cameraInput.x > 0 && cameraXAng < maxCameraAng)
         {
-            xAxisClamp = -90.0f;
-            mouseY = 0.0f;
-            ClampXAxisRotationToValue(90.0f);
+            m_camera.transform.Rotate(Vector3.right, cameraInput.x * (mouseSensitivity));
+
         }
 
-        m_camera.transform.Rotate(Vector3.left * mouseY);
-        playerBody.Rotate(Vector3.up * mouseX);
+        if (m_camera.transform.eulerAngles.x < 360 - maxCameraAng && m_camera.transform.eulerAngles.x > 180)
+        {
+            m_camera.transform.localEulerAngles = new Vector3(360 - maxCameraAng, 0f, 0f);
+        }
+        else if (m_camera.transform.eulerAngles.x > maxCameraAng && m_camera.transform.eulerAngles.x < 180)
+        {
+            m_camera.transform.localEulerAngles = new Vector3(maxCameraAng, 0f, 0f);
+        }
     }
 
     private void ClampXAxisRotationToValue(float value)
