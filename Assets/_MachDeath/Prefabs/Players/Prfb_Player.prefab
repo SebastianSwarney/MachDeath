@@ -63,8 +63,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4419650569349292682}
   - {fileID: 4419650568909376680}
+  - {fileID: 2801932473379763313}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -98,13 +98,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62b8ec2b302e7c4aac49b90bc8c12a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 0.5
-  maxCameraAng: 360
+  m_states:
+    m_movementControllState: 0
+    m_gravityControllState: 0
+    m_damageState: 0
+    m_inputState: 0
+  m_mouseSensitivity: 0.5
+  m_maxCameraAng: 360
   m_inverted: 1
   playerBody: {fileID: 4419650568852719272}
   m_camera: {fileID: 4419650569349292680}
   m_baseMovementSpeed: 10
-  m_runningMovementSpeeed: 10
   m_accelerationTime: 0.1
   m_maxJumpHeight: 5
   m_minJumpHeight: 1
@@ -136,17 +140,51 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   m_leapTime: 1
-  m_leapSpeedBoostBase: 15
-  m_leapSpeedBoostIncrease: 10
+  m_leapSpeedBoostBase: 5
+  m_leapSpeedBoostIncrease: 3
   m_leapSpeedBoostCountMax: 3
   m_leapBufferTime: 0.5
-  m_currentLeapTime: 0
-  m_leapingTimer: 0
-  m_leapCount: 1
+  m_wallSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_wallSpeedUpTime: 1
+  m_maxWallRunSpeed: 5
+  m_wallRunCameraMaxTilt: 30
+  m_rayCount: 5
+  m_raySpacing: 180
   m_wallRunStickDistance: 3
+  m_wallRunBufferTime: 0.3
+  m_wallJumpOffVelocity: {x: 100, y: 50}
   m_impact: {x: 0, y: 0, z: 0}
   m_rb: {fileID: 4419650568852719274}
   shit: 30
+  m_cameraTilt: {fileID: 2801932473379763313}
+  m_cameraMain: {fileID: 1241036337627567655}
+  m_tiltSpeed: 0.1
+  m_wallMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!136 &4419650568852719273
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -219,7 +257,7 @@ Transform:
   m_Children:
   - {fileID: 4419650568479112030}
   m_Father: {fileID: 4419650568852719272}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4419650569113766451
 GameObject:
@@ -339,11 +377,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4419650569349292683}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4419650568852719272}
+  m_Father: {fileID: 1241036337627567655}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4419650569349292680
@@ -397,3 +435,65 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4419650569349292683}
   m_Enabled: 1
+--- !u!1 &4849307283354755996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2801932473379763313}
+  m_Layer: 0
+  m_Name: Camera Tilt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2801932473379763313
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4849307283354755996}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1241036337627567655}
+  m_Father: {fileID: 4419650568852719272}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7641307430163266385
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1241036337627567655}
+  m_Layer: 0
+  m_Name: Camera Main
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1241036337627567655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7641307430163266385}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4419650569349292682}
+  m_Father: {fileID: 2801932473379763313}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

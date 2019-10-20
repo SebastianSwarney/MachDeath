@@ -9,16 +9,19 @@ public class PlayerControllerEvent : UnityEvent { }
 
 public class PlayerMovementController : MonoBehaviour
 {
-    public float mouseSensitivity;
-    public float maxCameraAng;
+    public enum MovementControllState { MovementEnabled, MovementDisabled }
+    public enum GravityState { GravityEnabled, GravityDisabled }
+    public enum DamageState { Vulnerable, Invulnerable }
+    public enum InputState { InputEnabled, InputDisabled }
+    public PlayerState m_states;
+
+    public float m_mouseSensitivity;
+    public float m_maxCameraAng;
     public bool m_inverted;
     public Transform playerBody;
     public Camera m_camera;
 
-    private float xAxisClamp;
-
     public float m_baseMovementSpeed;
-    public float m_runningMovementSpeeed;
     public float m_accelerationTime;
 
     private float m_currentMovementSpeed;
@@ -45,16 +48,33 @@ public class PlayerMovementController : MonoBehaviour
     public int m_leapSpeedBoostCountMax;
     public float m_leapBufferTime;
 
-    public float m_currentLeapTime;
-    public float m_leapingTimer;
+    private float m_currentLeapTime;
+    private float m_leapingTimer;
     private float m_leapBufferTimer;
-    public int m_leapCount;
+    private int m_leapCount;
+    private float m_currentLeapSpeed;
 
+    public AnimationCurve m_wallSpeedCurve;
+    public float m_wallSpeedUpTime;
+
+    public float m_maxWallRunSpeed;
+    public float m_wallRunCameraMaxTilt;
+
+    public int m_rayCount;
+    public float m_raySpacing;
     public float m_wallRunStickDistance;
+    public float m_wallRunBufferTime;
+    public Vector2 m_wallJumpOffVelocity;
+
+    private float m_wallRunBufferTimer;
+    private Vector3 m_wallDir;
+
+    private float m_currentWallRunningSpeed;
 
     private bool m_isLanded;
     private bool m_isRunning;
     private bool m_isLeaping;
+
     private Vector3 m_velocity;
     private Vector3 m_velocitySmoothing;
     private CharacterController m_characterController;
@@ -67,6 +87,20 @@ public class PlayerMovementController : MonoBehaviour
     private Vector2 m_movementInput;
     private Vector2 m_lookInput;
 
+    public Transform m_cameraTilt;
+    public Transform m_cameraMain;
+    private float m_tiltTarget;
+    public float m_tiltSpeed;
+
+    private float m_tiltSmoothingVelocity;
+
+    private bool m_isWallRunning;
+
+    private Vector3 m_wallVector;
+    private Vector3 m_wallFacingVector;
+
+    public LayerMask m_wallMask;
+
     private void Start()
     {
         CalculateJump();
@@ -74,7 +108,6 @@ public class PlayerMovementController : MonoBehaviour
         m_characterController = GetComponent<CharacterController>();
 
         LockCursor();
-        xAxisClamp = 0.0f;
 
         m_currentMovementSpeed = m_baseMovementSpeed;
 
@@ -89,6 +122,16 @@ public class PlayerMovementController : MonoBehaviour
     private void Update()
     {
         InputBuffering();
+
+
+
+        CalculateCurrentSpeed();
+
+        if (!IsGrounded())
+        {
+            WallRunRay();
+        }
+
         CalculateVelocity();
 
         if (Input.GetMouseButtonDown(0))
@@ -100,15 +143,14 @@ public class PlayerMovementController : MonoBehaviour
             OnJumpInputUp();
         }
 
-        if (!IsGrounded())
-        {
-            WallRunRay();
-        }
-
         m_characterController.Move(m_velocity * Time.deltaTime);
 
         CalculateGroundPhysics();
+
         CameraRotation();
+
+        TiltLerp();
+
     }
 
     public void SetMovementInput(Vector2 p_input)
@@ -121,26 +163,113 @@ public class PlayerMovementController : MonoBehaviour
         m_lookInput = p_input;
     }
 
+    private void CalculateCurrentSpeed()
+    {
+        float speed = m_baseMovementSpeed;
+
+        speed += m_currentLeapSpeed;
+
+        speed += m_currentWallRunningSpeed;
+
+        m_currentMovementSpeed = speed;
+
+    }
+
     private void WallRunRay()
     {
-        RaycastHit hit;
+        float m_angleBetweenRays = m_raySpacing / m_rayCount;
 
-        if (Physics.Raycast(m_characterController.transform.position, -m_characterController.transform.right, out hit, m_wallRunStickDistance))
+        bool rayHit = false;
+
+        for (int i = 0; i < m_rayCount; i++)
         {
-            if (Vector3.Dot(hit.normal, Vector3.up) == 0)
+            
+            Quaternion raySpaceQ = Quaternion.Euler(0, (i * m_angleBetweenRays) - (m_angleBetweenRays * (m_rayCount / 2)), 0);
+
+            RaycastHit hit;
+
+            if (Physics.Raycast(m_characterController.transform.position, raySpaceQ * transform.forward, out hit, m_wallRunStickDistance, m_wallMask))
             {
-                Vector3 wallVector = Vector3.Cross(hit.normal, Vector3.up);
 
-                m_velocity = wallVector * m_baseMovementSpeed;
+                if (Vector3.Dot(hit.normal, Vector3.up) == 0)
+                {
+                    rayHit = true;
+
+                    m_wallVector = Vector3.Cross(hit.normal, Vector3.up);
+                    m_wallFacingVector = Vector3.Cross(hit.normal, m_camera.transform.forward);
+
+                    m_wallDir = hit.normal;
+
+                    StartWallRun();
+                }
+
+                Debug.DrawLine(m_characterController.transform.position, hit.point);
             }
-
-            Debug.DrawLine(m_characterController.transform.position, hit.point);
         }
+
+        if (!rayHit)
+        {
+            m_isWallRunning = false;
+        }
+
+    }
+
+    private void TiltLerp()
+    {
+        m_cameraTilt.localRotation = Quaternion.Slerp(m_cameraTilt.localRotation, Quaternion.Euler(0, 0, m_tiltTarget), m_tiltSpeed);
+    }
+
+    private void StartWallRun()
+    {
+        if (!m_isWallRunning)
+        {
+            if (m_wallRunBufferTimer >= m_wallRunBufferTime)
+            {
+                StartCoroutine(WallRunning());
+                m_wallRunBufferTimer = 0;
+            }
+        }
+    }
+
+    IEnumerator WallRunning()
+    {
+        m_isWallRunning = true;
+
+        m_states.m_gravityControllState = GravityState.GravityDisabled;
+
+        float t = 0;
+
+        m_states.m_movementControllState = MovementControllState.MovementDisabled;
+
+        while (m_isWallRunning)
+        {
+            float result = Mathf.Lerp(-m_wallRunCameraMaxTilt, m_wallRunCameraMaxTilt, m_wallFacingVector.y);
+            m_tiltTarget = result;
+
+            m_velocity = (m_wallVector * -m_wallFacingVector.y) * m_currentMovementSpeed;
+            m_velocity.y = 0;
+
+            t += Time.deltaTime;
+
+            float progress =  m_wallSpeedCurve.Evaluate(t / m_wallSpeedUpTime);
+
+            m_currentWallRunningSpeed = Mathf.Lerp(m_currentWallRunningSpeed, m_maxWallRunSpeed, progress);
+
+            yield return null;
+        }
+
+        m_states.m_movementControllState = MovementControllState.MovementEnabled;
+
+        m_currentWallRunningSpeed = 0;
+
+        m_states.m_gravityControllState = GravityState.GravityEnabled;
+
+        m_tiltTarget = 0f;
     }
 
     private void CalculateGroundPhysics()
     {
-        if (m_characterController.collisionFlags == CollisionFlags.Below && !OnSlope())
+        if (IsGrounded() && !OnSlope())
         {
             m_velocity.y = 0;
         }
@@ -183,17 +312,25 @@ public class PlayerMovementController : MonoBehaviour
 
     private void CalculateVelocity()
     {
-        m_velocity.y += m_gravity * Time.deltaTime;
+        if (m_states.m_gravityControllState == GravityState.GravityEnabled)
+        {
+            m_velocity.y += m_gravity * Time.deltaTime;
+        }
 
-        Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
+        if (m_states.m_movementControllState == MovementControllState.MovementEnabled)
+        {
 
-        Vector3 forwardMovement = transform.forward * input.y;
-        Vector3 rightMovement = transform.right * input.x;
+            Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
 
-        Vector3 targetHorizontalMovement = Vector3.ClampMagnitude(forwardMovement + rightMovement, 1.0f) * m_currentMovementSpeed;
-        Vector3 horizontalMovement = Vector3.SmoothDamp(m_velocity, targetHorizontalMovement, ref m_velocitySmoothing, m_accelerationTime);
+            Vector3 forwardMovement = transform.forward * input.y;
+            Vector3 rightMovement = transform.right * input.x;
 
-        m_velocity = new Vector3(horizontalMovement.x, m_velocity.y, horizontalMovement.z);
+            Vector3 targetHorizontalMovement = Vector3.ClampMagnitude(forwardMovement + rightMovement, 1.0f) * m_currentMovementSpeed;
+            Vector3 horizontalMovement = Vector3.SmoothDamp(m_velocity, targetHorizontalMovement, ref m_velocitySmoothing, m_accelerationTime);
+
+            m_velocity = new Vector3(horizontalMovement.x, m_velocity.y, horizontalMovement.z);
+        }
+
     }
 
     private void InputBuffering()
@@ -228,6 +365,11 @@ public class PlayerMovementController : MonoBehaviour
         {
             m_leapCount = 0;
         }
+
+        if (!m_isWallRunning)
+        {
+            m_wallRunBufferTimer += Time.deltaTime;
+        }
     }
 
     private bool BunnyHop()
@@ -249,14 +391,18 @@ public class PlayerMovementController : MonoBehaviour
             m_leapBufferTimer = 0;
         }
 
-        if (!IsGrounded())
+        if (!IsGrounded() && !m_isWallRunning)
         {
             m_jumpBufferTimer = m_jumpBufferTime;
         }
 
+        if (m_isWallRunning)
+        {
+            WallJump();
+        }
+
         if (IsGrounded())
         {
-            //m_leapCount = 0;
             JumpMaxVelocity();
         }
 
@@ -277,6 +423,15 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
 
+    public void WallJump()
+    {
+        m_isWallRunning = false;
+
+        m_velocity = m_wallDir * m_wallJumpOffVelocity.x;
+        
+        m_velocity.y = m_wallJumpOffVelocity.y;
+    }
+
     public void JumpMaxVelocity()
     {
         m_velocity.y = m_maxJumpVelocity;
@@ -293,7 +448,6 @@ public class PlayerMovementController : MonoBehaviour
 
         if (m_isLeaping)
         {
-            //m_currentLeapTime += m_leapTime;
             m_leapingTimer = 0;
         }
         else
@@ -306,10 +460,9 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_isLeaping = true;
         m_leapingTimer = 0;
-
         m_currentLeapTime = m_leapTime;
 
-        float m_leapSpeed;
+        float targetLeapSpeed;
 
         while (m_leapingTimer < m_currentLeapTime)
         {
@@ -317,24 +470,23 @@ public class PlayerMovementController : MonoBehaviour
 
             if (m_leapCount <= m_leapSpeedBoostCountMax)
             {
-                m_leapSpeed = m_leapSpeedBoostBase + (m_leapSpeedBoostIncrease * m_leapCount);
+                targetLeapSpeed = m_leapSpeedBoostBase + (m_leapSpeedBoostIncrease * m_leapCount);
             }
             else
             {
-                m_leapSpeed = m_leapSpeedBoostBase + (m_leapSpeedBoostIncrease * m_leapSpeedBoostCountMax);
+                targetLeapSpeed = m_leapSpeedBoostBase + (m_leapSpeedBoostIncrease * m_leapSpeedBoostCountMax);
             }
 
             float progress = m_leapCurve.Evaluate(m_leapingTimer / m_currentLeapTime);
-
-            m_currentMovementSpeed = Mathf.Lerp(m_currentMovementSpeed, m_leapSpeed, progress);
+            m_currentLeapSpeed = Mathf.Lerp(m_currentLeapSpeed, targetLeapSpeed, progress);
 
             yield return null;
         }
 
-        m_currentMovementSpeed = m_baseMovementSpeed;
-
+        m_currentLeapSpeed = 0;
         m_isLeaping = false;
     }
+
 
     private bool IsGrounded()
     {
@@ -362,6 +514,8 @@ public class PlayerMovementController : MonoBehaviour
 
         return false;
     }
+
+
 
     private IEnumerator KnockBack()
     {
@@ -394,41 +548,46 @@ public class PlayerMovementController : MonoBehaviour
         Vector2 cameraInput = new Vector2(m_lookInput.y * ((m_inverted) ? -1 : 1), m_lookInput.x);
 
         //Rotate the player on the y axis (left and right)
-        transform.Rotate(Vector3.up, cameraInput.y * (mouseSensitivity));
+        transform.Rotate(Vector3.up, cameraInput.y * (m_mouseSensitivity));
 
-        float cameraXAng = m_camera.transform.eulerAngles.x;
+        float cameraXAng = m_cameraMain.transform.eulerAngles.x;
 
 
 
         //Stops the camera from rotating, if it hits the resrictions
-        if (cameraInput.x < 0 && cameraXAng > 360 - maxCameraAng || cameraInput.x < 0 && cameraXAng < maxCameraAng + 10)
+        if (cameraInput.x < 0 && cameraXAng > 360 - m_maxCameraAng || cameraInput.x < 0 && cameraXAng < m_maxCameraAng + 10)
         {
-            m_camera.transform.Rotate(Vector3.right, cameraInput.x * (mouseSensitivity));
+            m_cameraMain.transform.Rotate(Vector3.right, cameraInput.x * (m_mouseSensitivity));
 
         }
-        else if (cameraInput.x > 0 && cameraXAng > 360 - maxCameraAng - 10 || cameraInput.x > 0 && cameraXAng < maxCameraAng)
+        else if (cameraInput.x > 0 && cameraXAng > 360 - m_maxCameraAng - 10 || cameraInput.x > 0 && cameraXAng < m_maxCameraAng)
         {
-            m_camera.transform.Rotate(Vector3.right, cameraInput.x * (mouseSensitivity));
+            m_cameraMain.transform.Rotate(Vector3.right, cameraInput.x * (m_mouseSensitivity));
 
         }
 
-        if (m_camera.transform.eulerAngles.x < 360 - maxCameraAng && m_camera.transform.eulerAngles.x > 180)
+        if (m_cameraMain.transform.eulerAngles.x < 360 - m_maxCameraAng && m_cameraMain.transform.eulerAngles.x > 180)
         {
-            m_camera.transform.localEulerAngles = new Vector3(360 - maxCameraAng, 0f, 0f);
+            m_cameraMain.transform.localEulerAngles = new Vector3(360 - m_maxCameraAng, 0f, 0f);
         }
-        else if (m_camera.transform.eulerAngles.x > maxCameraAng && m_camera.transform.eulerAngles.x < 180)
+        else if (m_camera.transform.eulerAngles.x > m_maxCameraAng && m_cameraMain.transform.eulerAngles.x < 180)
         {
-            m_camera.transform.localEulerAngles = new Vector3(maxCameraAng, 0f, 0f);
+            m_cameraMain.transform.localEulerAngles = new Vector3(m_maxCameraAng, 0f, 0f);
         }
-    }
-
-    private void ClampXAxisRotationToValue(float value)
-    {
-        Vector3 eulerRotation = transform.eulerAngles;
-        eulerRotation.x = value;
-        transform.eulerAngles = eulerRotation;
     }
     #endregion
+
+    #region Player State Code
+    [System.Serializable]
+    public struct PlayerState
+    {
+        public MovementControllState m_movementControllState;
+        public GravityState m_gravityControllState;
+        public DamageState m_damageState;
+        public InputState m_inputState;
+    }
+    #endregion
+
 
     private void OnCollisionEnter(Collision collision)
     {
