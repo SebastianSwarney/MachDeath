@@ -1128,6 +1128,11 @@ PrefabInstance:
       propertyPath: m_speedometer
       value: 
       objectReference: {fileID: 815992746}
+    - target: {fileID: 4419650568852719279, guid: c2eb00a9c1b7ea24ca920833a620b372,
+        type: 3}
+      propertyPath: m_wallJumpOffVelocity.z
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2eb00a9c1b7ea24ca920833a620b372, type: 3}
 --- !u!1 &337281979

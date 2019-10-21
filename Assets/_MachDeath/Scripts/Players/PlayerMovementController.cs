@@ -65,11 +65,14 @@ public class PlayerMovementController : MonoBehaviour
     public float m_raySpacing;
     public float m_wallRunStickDistance;
     public float m_wallRunBufferTime;
-    public Vector2 m_wallJumpOffVelocity;
+    public Vector3 m_wallJumpOffVelocity;
 
     private float m_wallRunBufferTimer;
     private Vector3 m_wallDir;
     private float m_currentWallRunningSpeed;
+
+    public float m_wallJumpBufferTime;
+    private float m_wallJumpBufferTimer;
 
     public float m_slideTime;
     public AnimationCurve m_slideCurve;
@@ -113,6 +116,8 @@ public class PlayerMovementController : MonoBehaviour
     public AnimationCurve m_speedBarCurve;
     public float m_maxSpeed;
 
+    private bool m_holdingWallRideStick;
+
     private void Start()
     {
         CalculateJump();
@@ -124,6 +129,8 @@ public class PlayerMovementController : MonoBehaviour
         m_currentMovementSpeed = m_baseMovementSpeed;
 
         m_leapBufferTimer = m_leapBufferTime;
+
+        m_wallJumpBufferTimer = m_wallJumpBufferTime;
     }
 
     private void OnValidate()
@@ -144,10 +151,12 @@ public class PlayerMovementController : MonoBehaviour
             WallRunRay();
         }
 
+        /*
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             StartSlide();
         }
+        */
 
         CalculateVelocity();
 
@@ -170,6 +179,16 @@ public class PlayerMovementController : MonoBehaviour
     public void SetLookInput(Vector2 p_input)
     {
         m_lookInput = p_input;
+    }
+
+    public void WallRideInputDown()
+    {
+        m_holdingWallRideStick = true;
+    }
+
+    public void WallRideInputUp()
+    {
+        m_holdingWallRideStick = false;
     }
 
     private void StartSlide()
@@ -258,11 +277,16 @@ public class PlayerMovementController : MonoBehaviour
 
                 Debug.DrawLine(m_characterController.transform.position, hit.point);
             }
+            else
+            {
+                m_wallJumpBufferTimer = m_wallJumpBufferTime;
+            }
         }
 
         if (!rayHit)
         {
             m_isWallRunning = false;
+            
         }
 
     }
@@ -278,8 +302,23 @@ public class PlayerMovementController : MonoBehaviour
         {
             if (m_wallRunBufferTimer >= m_wallRunBufferTime)
             {
-                StartCoroutine(WallRunning());
-                m_wallRunBufferTimer = 0;
+                if (m_holdingWallRideStick)
+                {
+                    StartCoroutine(WallRunning());
+                    m_wallRunBufferTimer = 0;
+
+                    return;
+                }
+
+                m_wallJumpBufferTimer = 0;
+            }
+        }
+
+        if (m_isWallRunning)
+        {
+            if (!m_holdingWallRideStick)
+            {
+                m_isWallRunning = false;
             }
         }
     }
@@ -427,6 +466,11 @@ public class PlayerMovementController : MonoBehaviour
         {
             m_wallRunBufferTimer += Time.deltaTime;
         }
+
+        if (m_wallJumpBufferTimer < m_wallJumpBufferTime)
+        {
+            m_wallJumpBufferTimer += Time.deltaTime;
+        }
     }
 
     private bool BunnyHop()
@@ -442,6 +486,12 @@ public class PlayerMovementController : MonoBehaviour
 
     public void OnJumpInputDown()
     {
+        if (!IsGrounded() && m_wallJumpBufferTimer < m_wallJumpBufferTime)
+        {
+            WallJump();
+            m_wallJumpBufferTimer = m_wallJumpBufferTime;
+        }
+
         if (m_leapBufferTimer <= m_leapBufferTime && IsGrounded())
         {
             RunLeap();
@@ -482,11 +532,14 @@ public class PlayerMovementController : MonoBehaviour
 
     public void WallJump()
     {
+
         m_isWallRunning = false;
 
-        m_velocity = m_wallDir * m_wallJumpOffVelocity.x;
+        m_velocity.x = m_wallDir.x * m_wallJumpOffVelocity.x;
         
         m_velocity.y = m_wallJumpOffVelocity.y;
+
+        m_velocity.z = m_wallDir.z * m_wallJumpOffVelocity.z;
     }
 
     public void JumpMaxVelocity()

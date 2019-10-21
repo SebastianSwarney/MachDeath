@@ -33,5 +33,15 @@ public class PlayerInput : MonoBehaviour
         {
             m_playerMovementController.OnJumpInputUp();
         }
+
+        if (m_playerInputController.GetButtonDown("WallRide"))
+        {
+            m_playerMovementController.WallRideInputDown();
+        }
+
+        if (m_playerInputController.GetButtonUp("WallRide"))
+        {
+            m_playerMovementController.WallRideInputUp();
+        }
     }
 }
