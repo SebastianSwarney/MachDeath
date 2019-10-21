@@ -48,7 +48,7 @@ public abstract class ItemBase : MonoBehaviour
             readyToUse = false;
             Invoke("SetReadyToFire", itemstats._itemCoolDown);
 
-            rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, .0f));
+            //rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, .0f));
             ApplyUseItem();
             //weaponSound.Play();
         }
