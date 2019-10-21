@@ -123,8 +123,6 @@ public class PlayerMovementController : MonoBehaviour
     {
         InputBuffering();
 
-
-
         CalculateCurrentSpeed();
 
         if (!IsGrounded())
@@ -133,15 +131,6 @@ public class PlayerMovementController : MonoBehaviour
         }
 
         CalculateVelocity();
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            OnJumpInputDown();
-        }
-        if (Input.GetMouseButtonUp(0))
-        {
-            OnJumpInputUp();
-        }
 
         m_characterController.Move(m_velocity * Time.deltaTime);
 
