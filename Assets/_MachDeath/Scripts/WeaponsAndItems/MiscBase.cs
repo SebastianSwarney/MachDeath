@@ -21,7 +21,7 @@ public class MiscBase : ItemBase
 
     protected override void ApplyUseItem()
     {
-  
+        Debug.Log("Using Misc");
     }
 
     // Update is called once per frame

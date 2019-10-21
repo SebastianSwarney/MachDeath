@@ -8,9 +8,9 @@ public class PlayerMouseItemsInput : MonoBehaviour
     private WeaponController weaponController;
 
     //start the index on 0
-    private int currentUsableIndex = 0;
-
-
+    private int currentLeftUsableIndex = 0;
+    private int currentRightUsableIndex = 0;
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -29,39 +29,50 @@ public class PlayerMouseItemsInput : MonoBehaviour
         var Items = weaponController.usableItemsLeftClick;
         if (Input.GetAxis("Mouse ScrollWheel") > .0f)
         {
-            Items[currentUsableIndex].gameObject.SetActive(false);
-            currentUsableIndex = (currentUsableIndex + 1) % (Items.Count);
-            Items[currentUsableIndex].gameObject.SetActive(true);
+            Items[currentLeftUsableIndex].gameObject.SetActive(false);
+            currentLeftUsableIndex = (currentLeftUsableIndex + 1) % (Items.Count);
+            Items[currentLeftUsableIndex].gameObject.SetActive(true);
         }
         else if (Input.GetAxis("Mouse ScrollWheel") < .0f)
         {
-            Items[currentUsableIndex].gameObject.SetActive(false);
+            Items[currentLeftUsableIndex].gameObject.SetActive(false);
 
-            if (currentUsableIndex == 0)
+            if (currentLeftUsableIndex == 0)
             {
-                currentUsableIndex = Items.Count - 1;
+                currentLeftUsableIndex = Items.Count - 1;
             }
             else
             {
-                currentUsableIndex = (currentUsableIndex - 1) % (Items.Count);
+                currentLeftUsableIndex = (currentLeftUsableIndex - 1) % (Items.Count);
             }
 
-            Items[currentUsableIndex].gameObject.SetActive(true);
+            Items[currentLeftUsableIndex].gameObject.SetActive(true);
         }
     }
 
     void ItemUse()
     {
+        Debug.Log("current Index is: " + currentLeftUsableIndex);
         var Items = weaponController.usableItemsLeftClick;
 
-        if (Items[currentUsableIndex])
+        if (Items[currentLeftUsableIndex])
         {
             if (Input.GetButtonDown("Fire1"))
             {
-                Items[currentUsableIndex].GetComponent<WeaponBase>().UseItem(0f);
+                var isWeapon = Items[currentLeftUsableIndex].GetComponent<WeaponBase>();
+                if (isWeapon)
+                {
+                    isWeapon.UseItem(0f);
+                }
+                else
+                {
+                    Items[currentLeftUsableIndex].GetComponent<MiscBase>().UseItem(0f);
+                }
             }
             else
             {
+                //If there was an automatic weapon such as a gun
+                //Uncomment the below code
                 //firingSince = .0f;
             }
         }
@@ -75,11 +86,15 @@ public class PlayerMouseItemsInput : MonoBehaviour
 
         var Items2 = weaponController.usableItemsRightClick;
 
-        if (Items2[currentUsableIndex])
+
+        //For shield can not really use this index since the mouse scroll wheel is always set to the usable items 
+        //such as weapons and 
+
+        if (Items2[currentRightUsableIndex])
         {
             if (Input.GetButtonDown("Fire2"))
             {
-                Items2[currentUsableIndex].GetComponent<UtilityBase>().UseItem(0f);
+                Items2[currentRightUsableIndex].GetComponent<UtilityBase>().UseItem(0f);
             }
             else
             {
@@ -93,5 +108,6 @@ public class PlayerMouseItemsInput : MonoBehaviour
                 //weapons[currentWeaponIndex].Shoot(null);
             }
         }
+
     }
 }
