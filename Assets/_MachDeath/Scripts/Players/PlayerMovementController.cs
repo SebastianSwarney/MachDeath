@@ -137,7 +137,7 @@ public class PlayerMovementController : MonoBehaviour
 
         CalculateCurrentSpeed();
 
-        FillSpeedBar();
+        //FillSpeedBar();
 
         if (!IsGrounded())
         {
