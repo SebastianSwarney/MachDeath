@@ -21,6 +21,7 @@ public class PlayerMouseItemsInput : MonoBehaviour
     void Update()
     {
         CheckMouseScroll();
+        ItemUse();
     }
 
     void CheckMouseScroll()
@@ -55,9 +56,9 @@ public class PlayerMouseItemsInput : MonoBehaviour
 
         if (Items[currentUsableIndex])
         {
-            if (Input.GetButton("Fire1"))
+            if (Input.GetButtonDown("Fire1"))
             {
-                Items[currentUsableIndex].GetComponent<ItemBase>().UseItem(0.2f);
+                Items[currentUsableIndex].GetComponent<WeaponBase>().UseItem(0f);
             }
             else
             {
@@ -67,6 +68,27 @@ public class PlayerMouseItemsInput : MonoBehaviour
         else
         {
             if (Input.GetButtonDown("Fire1"))
+            {
+                //weapons[currentWeaponIndex].Shoot(null);
+            }
+        }
+
+        var Items2 = weaponController.usableItemsRightClick;
+
+        if (Items2[currentUsableIndex])
+        {
+            if (Input.GetButtonDown("Fire2"))
+            {
+                Items2[currentUsableIndex].GetComponent<UtilityBase>().UseItem(0f);
+            }
+            else
+            {
+                //firingSince = .0f;
+            }
+        }
+        else
+        {
+            if (Input.GetButtonDown("Fire2"))
             {
                 //weapons[currentWeaponIndex].Shoot(null);
             }
