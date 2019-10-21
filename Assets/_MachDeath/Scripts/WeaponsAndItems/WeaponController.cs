@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WeaponController : MonoBehaviour
 {
-    public bool isSpear, isActive;
+    //public bool isSpear, isActive;
 
     [SerializeField]
     private GameObject hitMarker;
