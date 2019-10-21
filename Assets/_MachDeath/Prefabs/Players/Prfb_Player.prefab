@@ -139,11 +139,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_leapTime: 1
+  m_leapTime: 3
   m_leapSpeedBoostBase: 5
-  m_leapSpeedBoostIncrease: 3
-  m_leapSpeedBoostCountMax: 3
-  m_leapBufferTime: 0.5
+  m_leapSpeedBoostIncrease: 5
+  m_leapSpeedBoostCountMax: 5
+  m_leapBufferTime: 0.1
   m_wallSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -168,14 +168,41 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_wallSpeedUpTime: 1
-  m_maxWallRunSpeed: 5
+  m_wallSpeedUpTime: 2
+  m_maxWallRunSpeed: 15
   m_wallRunCameraMaxTilt: 30
   m_rayCount: 5
   m_raySpacing: 180
   m_wallRunStickDistance: 3
   m_wallRunBufferTime: 0.3
-  m_wallJumpOffVelocity: {x: 100, y: 50}
+  m_wallJumpOffVelocity: {x: 100, y: 30}
+  m_slideTime: 3
+  m_slideCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_slideSpeedUpTime: 0.5
+  m_maxSlideSpeed: 10
   m_impact: {x: 0, y: 0, z: 0}
   m_rb: {fileID: 4419650568852719274}
   shit: 30
@@ -185,6 +212,32 @@ MonoBehaviour:
   m_wallMask:
     serializedVersion: 2
     m_Bits: 256
+  m_speedometer: {fileID: 0}
+  m_speedBarCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_maxSpeed: 80
 --- !u!136 &4419650568852719273
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -407,7 +460,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 90
   orthographic: 0

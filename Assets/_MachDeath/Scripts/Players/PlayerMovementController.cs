@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class PlayerControllerEvent : UnityEvent { }
@@ -68,8 +69,15 @@ public class PlayerMovementController : MonoBehaviour
 
     private float m_wallRunBufferTimer;
     private Vector3 m_wallDir;
-
     private float m_currentWallRunningSpeed;
+
+    public float m_slideTime;
+    public AnimationCurve m_slideCurve;
+    public float m_slideSpeedUpTime;
+    public float m_maxSlideSpeed;
+
+    private float m_currentSlideSpeed;
+    private bool m_isSliding;
 
     private bool m_isLanded;
     private bool m_isRunning;
@@ -101,6 +109,10 @@ public class PlayerMovementController : MonoBehaviour
 
     public LayerMask m_wallMask;
 
+    public Image m_speedometer;
+    public AnimationCurve m_speedBarCurve;
+    public float m_maxSpeed;
+
     private void Start()
     {
         CalculateJump();
@@ -125,9 +137,16 @@ public class PlayerMovementController : MonoBehaviour
 
         CalculateCurrentSpeed();
 
+        FillSpeedBar();
+
         if (!IsGrounded())
         {
             WallRunRay();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            StartSlide();
         }
 
         CalculateVelocity();
@@ -139,6 +158,7 @@ public class PlayerMovementController : MonoBehaviour
         CameraRotation();
 
         TiltLerp();
+
 
     }
 
@@ -152,6 +172,48 @@ public class PlayerMovementController : MonoBehaviour
         m_lookInput = p_input;
     }
 
+    private void StartSlide()
+    {
+        if (!m_isSliding)
+        {
+            if (IsGrounded())
+            {
+                StartCoroutine(Slide());
+            }
+        }
+    }
+
+    private IEnumerator Slide()
+    {
+        m_isSliding = true;
+
+        float t = 0;
+
+        while (t < m_slideTime)
+        {
+            t += Time.deltaTime;
+
+            float progress = m_slideCurve.Evaluate(t / m_slideSpeedUpTime);
+            m_currentSlideSpeed = Mathf.Lerp(0f, m_maxSlideSpeed, progress);
+
+            m_leapingTimer = 0;
+
+            yield return null;
+        }
+
+        m_currentSlideSpeed = 0;
+
+        m_isSliding = false;
+    }
+
+    private void FillSpeedBar()
+    {
+        float progress = m_speedBarCurve.Evaluate(m_currentMovementSpeed / m_maxSpeed);
+
+        m_speedometer.fillAmount = progress;
+
+    }
+
     private void CalculateCurrentSpeed()
     {
         float speed = m_baseMovementSpeed;
@@ -159,6 +221,8 @@ public class PlayerMovementController : MonoBehaviour
         speed += m_currentLeapSpeed;
 
         speed += m_currentWallRunningSpeed;
+
+        speed += m_currentSlideSpeed;
 
         m_currentMovementSpeed = speed;
 
@@ -230,6 +294,8 @@ public class PlayerMovementController : MonoBehaviour
 
         m_states.m_movementControllState = MovementControllState.MovementDisabled;
 
+        m_currentWallRunningSpeed = 0;
+
         while (m_isWallRunning)
         {
             m_leapingTimer = 0;
@@ -244,7 +310,7 @@ public class PlayerMovementController : MonoBehaviour
 
             float progress =  m_wallSpeedCurve.Evaluate(t / m_wallSpeedUpTime);
 
-            m_currentWallRunningSpeed = Mathf.Lerp(m_currentWallRunningSpeed, m_maxWallRunSpeed, progress);
+            m_currentWallRunningSpeed = Mathf.Lerp(0f, m_maxWallRunSpeed, progress);
 
             yield return null;
         }
@@ -469,7 +535,7 @@ public class PlayerMovementController : MonoBehaviour
             }
 
             float progress = m_leapCurve.Evaluate(m_leapingTimer / m_currentLeapTime);
-            m_currentLeapSpeed = Mathf.Lerp(m_currentLeapSpeed, targetLeapSpeed, progress);
+            m_currentLeapSpeed = Mathf.Lerp(0f, targetLeapSpeed, progress);
 
             yield return null;
         }
