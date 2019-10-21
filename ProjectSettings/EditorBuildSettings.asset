@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_MachDeath/Scenes/Scn_PlayerNetwork.unity
+    guid: cf65675105eb0954fb7c6535d1c20bf2
   m_configObjects: {}

@@ -1,0 +1,15 @@
+{
+    "name": "Mirror.MachDeath",
+    "references": [
+        "Mirror",
+        "Mirror.Components"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
