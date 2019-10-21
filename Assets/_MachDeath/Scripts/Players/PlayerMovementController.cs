@@ -16,31 +16,56 @@ public class PlayerMovementController : MonoBehaviour
     public enum InputState { InputEnabled, InputDisabled }
     public PlayerState m_states;
 
+    #region Camera Properties
+    [Header("Camera Properties")]
+
     public float m_mouseSensitivity;
     public float m_maxCameraAng;
     public bool m_inverted;
-    public Transform playerBody;
     public Camera m_camera;
+    public Transform m_cameraTilt;
+    public Transform m_cameraMain;
+
+    [Space]
+    #endregion
+
+    #region Base Movement Properties
+    [Header("Base Movement Properties")]
 
     public float m_baseMovementSpeed;
     public float m_accelerationTime;
 
     private float m_currentMovementSpeed;
+    private Vector3 m_velocity;
+    private Vector3 m_velocitySmoothing;
+    private CharacterController m_characterController;
+
+    [Space]
+    #endregion
+
+    #region Jumping Properties
+    [Header("Jumping Properties")]
 
     public float m_maxJumpHeight = 4;
     public float m_minJumpHeight = 1;
     public float m_timeToJumpApex = .4f;
-
-    private int m_jumpCount;
-    private float m_gravity;
-    private float m_maxJumpVelocity;
-    private float m_minJumpVelocity;
 
     public float m_graceTime;
     private float m_graceTimer;
 
     public float m_jumpBufferTime;
     private float m_jumpBufferTimer;
+
+    private float m_gravity;
+    private float m_maxJumpVelocity;
+    private float m_minJumpVelocity;
+    private bool m_isLanded;
+
+    [Space]
+    #endregion
+
+    #region Leaping Properties
+    [Header("Leaping Properties")]
 
     public AnimationCurve m_leapCurve;
     public float m_leapTime;
@@ -54,25 +79,52 @@ public class PlayerMovementController : MonoBehaviour
     private float m_leapBufferTimer;
     private int m_leapCount;
     private float m_currentLeapSpeed;
+    private bool m_isLeaping;
+
+    [Space]
+    #endregion
+
+    #region Wall Run Properties
+    [Header("Wall Run Properties")]
+
+    public LayerMask m_wallMask;
 
     public AnimationCurve m_wallSpeedCurve;
     public float m_wallSpeedUpTime;
-
     public float m_maxWallRunSpeed;
+
+    public float m_tiltSpeed;
     public float m_wallRunCameraMaxTilt;
 
-    public int m_rayCount;
-    public float m_raySpacing;
-    public float m_wallRunStickDistance;
-    public float m_wallRunBufferTime;
-    public Vector3 m_wallJumpOffVelocity;
+    public int m_wallRidingRayCount;
+    public float m_wallRaySpacing;
+    public float m_wallRunRayLength;
 
-    private float m_wallRunBufferTimer;
-    private Vector3 m_wallDir;
-    private float m_currentWallRunningSpeed;
+    public float m_wallRunBufferTime;
 
     public float m_wallJumpBufferTime;
+    public Vector3 m_wallJumpVelocity;
+
+    private float m_currentWallRunningSpeed;
+
+    private float m_wallRunBufferTimer;
     private float m_wallJumpBufferTimer;
+
+    private float m_tiltTarget;
+    private float m_tiltSmoothingVelocity;
+
+    private bool m_isWallRunning;
+    private bool m_holdingWallRideStick;
+
+    private Vector3 m_wallDir;
+    private Vector3 m_wallVector;
+    private Vector3 m_wallFacingVector;
+
+    [Space]
+    #endregion
+
+    #region Slide Properties
+    [Header("Slide Properties")]
 
     public float m_slideTime;
     public AnimationCurve m_slideCurve;
@@ -82,41 +134,22 @@ public class PlayerMovementController : MonoBehaviour
     private float m_currentSlideSpeed;
     private bool m_isSliding;
 
-    private bool m_isLanded;
-    private bool m_isRunning;
-    private bool m_isLeaping;
+    [Space]
+    #endregion
 
-    private Vector3 m_velocity;
-    private Vector3 m_velocitySmoothing;
-    private CharacterController m_characterController;
+    private Vector2 m_movementInput;
+    private Vector2 m_lookInput;
 
     public Vector3 m_impact;
     public Rigidbody m_rb;
     public float shit;
     private bool m_isStunned;
 
-    private Vector2 m_movementInput;
-    private Vector2 m_lookInput;
-
-    public Transform m_cameraTilt;
-    public Transform m_cameraMain;
-    private float m_tiltTarget;
-    public float m_tiltSpeed;
-
-    private float m_tiltSmoothingVelocity;
-
-    private bool m_isWallRunning;
-
-    private Vector3 m_wallVector;
-    private Vector3 m_wallFacingVector;
-
-    public LayerMask m_wallMask;
-
     public Image m_speedometer;
     public AnimationCurve m_speedBarCurve;
     public float m_maxSpeed;
 
-    private bool m_holdingWallRideStick;
+
 
     private void Start()
     {
@@ -151,13 +184,6 @@ public class PlayerMovementController : MonoBehaviour
             WallRunRay();
         }
 
-        /*
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            StartSlide();
-        }
-        */
-
         CalculateVelocity();
 
         m_characterController.Move(m_velocity * Time.deltaTime);
@@ -167,10 +193,9 @@ public class PlayerMovementController : MonoBehaviour
         CameraRotation();
 
         TiltLerp();
-
-
     }
 
+    #region Input Code
     public void SetMovementInput(Vector2 p_input)
     {
         m_movementInput = p_input;
@@ -190,77 +215,94 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_holdingWallRideStick = false;
     }
+    #endregion
 
-    private void StartSlide()
+    #region Input Buffering Code
+
+    private void InputBuffering()
     {
-        if (!m_isSliding)
+        if (m_characterController.collisionFlags == CollisionFlags.Below)
         {
-            if (IsGrounded())
-            {
-                StartCoroutine(Slide());
-            }
+            m_graceTimer = 0;
+        }
+
+        if (!(m_characterController.collisionFlags == CollisionFlags.Below))
+        {
+            m_graceTimer += Time.deltaTime;
+        }
+
+        if (m_jumpBufferTimer > m_leapBufferTime)
+        {
+            m_jumpBufferTimer += Time.deltaTime;
+        }
+
+        if (BunnyHop())
+        {
+            RunLeap();
+            JumpMaxVelocity();
+        }
+
+        if (IsGrounded())
+        {
+            m_leapBufferTimer += Time.deltaTime;
+        }
+
+        if (IsGrounded() && m_leapBufferTimer > m_leapBufferTime)
+        {
+            m_leapCount = 0;
+        }
+
+        if (!m_isWallRunning)
+        {
+            m_wallRunBufferTimer += Time.deltaTime;
+        }
+
+        if (m_wallJumpBufferTimer < m_wallJumpBufferTime)
+        {
+            m_wallJumpBufferTimer += Time.deltaTime;
         }
     }
 
-    private IEnumerator Slide()
+    private bool BunnyHop()
     {
-        m_isSliding = true;
-
-        float t = 0;
-
-        while (t < m_slideTime)
+        if (CheckBuffer(ref m_jumpBufferTimer, ref m_jumpBufferTime) && IsGrounded())
         {
-            t += Time.deltaTime;
-
-            float progress = m_slideCurve.Evaluate(t / m_slideSpeedUpTime);
-            m_currentSlideSpeed = Mathf.Lerp(0f, m_maxSlideSpeed, progress);
-
-            m_leapingTimer = 0;
-
-            yield return null;
+            return true;
         }
 
-        m_currentSlideSpeed = 0;
-
-        m_isSliding = false;
+        return false;
     }
 
-    private void FillSpeedBar()
+    private bool CheckBuffer(ref float p_bufferTimer, ref float p_bufferTime)
     {
-        float progress = m_speedBarCurve.Evaluate(m_currentMovementSpeed / m_maxSpeed);
+        if (p_bufferTimer < p_bufferTime)
+        {
+            p_bufferTimer = p_bufferTime;
 
-        m_speedometer.fillAmount = progress;
+            return true;
+        }
 
+        return false;
     }
 
-    private void CalculateCurrentSpeed()
-    {
-        float speed = m_baseMovementSpeed;
+    #endregion
 
-        speed += m_currentLeapSpeed;
-
-        speed += m_currentWallRunningSpeed;
-
-        speed += m_currentSlideSpeed;
-
-        m_currentMovementSpeed = speed;
-
-    }
+    #region Wall Run Code
 
     private void WallRunRay()
     {
-        float m_angleBetweenRays = m_raySpacing / m_rayCount;
+        float m_angleBetweenRays = m_wallRaySpacing / m_wallRidingRayCount;
 
         bool rayHit = false;
 
-        for (int i = 0; i < m_rayCount; i++)
+        for (int i = 0; i < m_wallRidingRayCount; i++)
         {
-            
-            Quaternion raySpaceQ = Quaternion.Euler(0, (i * m_angleBetweenRays) - (m_angleBetweenRays * (m_rayCount / 2)), 0);
+
+            Quaternion raySpaceQ = Quaternion.Euler(0, (i * m_angleBetweenRays) - (m_angleBetweenRays * (m_wallRidingRayCount / 2)), 0);
 
             RaycastHit hit;
 
-            if (Physics.Raycast(m_characterController.transform.position, raySpaceQ * transform.forward, out hit, m_wallRunStickDistance, m_wallMask))
+            if (Physics.Raycast(m_characterController.transform.position, raySpaceQ * transform.forward, out hit, m_wallRunRayLength, m_wallMask))
             {
 
                 if (Vector3.Dot(hit.normal, Vector3.up) == 0)
@@ -286,7 +328,7 @@ public class PlayerMovementController : MonoBehaviour
         if (!rayHit)
         {
             m_isWallRunning = false;
-            
+
         }
 
     }
@@ -347,7 +389,7 @@ public class PlayerMovementController : MonoBehaviour
 
             t += Time.deltaTime;
 
-            float progress =  m_wallSpeedCurve.Evaluate(t / m_wallSpeedUpTime);
+            float progress = m_wallSpeedCurve.Evaluate(t / m_wallSpeedUpTime);
 
             m_currentWallRunningSpeed = Mathf.Lerp(0f, m_maxWallRunSpeed, progress);
 
@@ -363,127 +405,9 @@ public class PlayerMovementController : MonoBehaviour
         m_tiltTarget = 0f;
     }
 
-    private void CalculateGroundPhysics()
-    {
-        if (IsGrounded() && !OnSlope())
-        {
-            m_velocity.y = 0;
-        }
+    #endregion
 
-        if (OnSlope())
-        {
-            RaycastHit hit;
-
-            Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
-
-            if (Physics.Raycast(bottom, Vector3.down, out hit))
-            {
-                m_characterController.Move(new Vector3(0, -(hit.distance), 0));
-            }
-        }
-
-        if (IsGrounded() && !m_isLanded)
-        {
-            Landed();
-        }
-
-        if (!IsGrounded())
-        {
-            m_isLanded = false;
-        }
-    }
-
-    private void Landed()
-    {
-        m_isLanded = true;
-        m_leapBufferTimer = 0;
-    }
-
-    private void CalculateJump()
-    {
-        m_gravity = -(2 * m_maxJumpHeight) / Mathf.Pow(m_timeToJumpApex, 2);
-        m_maxJumpVelocity = Mathf.Abs(m_gravity) * m_timeToJumpApex;
-        m_minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(m_gravity) * m_minJumpHeight);
-    }
-
-    private void CalculateVelocity()
-    {
-        if (m_states.m_gravityControllState == GravityState.GravityEnabled)
-        {
-            m_velocity.y += m_gravity * Time.deltaTime;
-        }
-
-        if (m_states.m_movementControllState == MovementControllState.MovementEnabled)
-        {
-
-            Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
-
-            Vector3 forwardMovement = transform.forward * input.y;
-            Vector3 rightMovement = transform.right * input.x;
-
-            Vector3 targetHorizontalMovement = Vector3.ClampMagnitude(forwardMovement + rightMovement, 1.0f) * m_currentMovementSpeed;
-            Vector3 horizontalMovement = Vector3.SmoothDamp(m_velocity, targetHorizontalMovement, ref m_velocitySmoothing, m_accelerationTime);
-
-            m_velocity = new Vector3(horizontalMovement.x, m_velocity.y, horizontalMovement.z);
-        }
-
-    }
-
-    private void InputBuffering()
-    {
-        if (m_characterController.collisionFlags == CollisionFlags.Below)
-        {
-            m_graceTimer = 0;
-        }
-
-        if (!(m_characterController.collisionFlags == CollisionFlags.Below))
-        {
-            m_graceTimer += Time.deltaTime;
-        }
-
-        if (m_jumpBufferTimer > 0)
-        {
-            m_jumpBufferTimer -= Time.deltaTime;
-        }
-
-        if (BunnyHop())
-        {
-            RunLeap();
-            JumpMaxVelocity();
-        }
-
-        if (IsGrounded())
-        {
-            m_leapBufferTimer += Time.deltaTime;
-        }
-
-        if (IsGrounded() && m_leapBufferTimer > m_leapBufferTime)
-        {
-            m_leapCount = 0;
-        }
-
-        if (!m_isWallRunning)
-        {
-            m_wallRunBufferTimer += Time.deltaTime;
-        }
-
-        if (m_wallJumpBufferTimer < m_wallJumpBufferTime)
-        {
-            m_wallJumpBufferTimer += Time.deltaTime;
-        }
-    }
-
-    private bool BunnyHop()
-    {
-        if (m_jumpBufferTimer > 0 && m_characterController.collisionFlags == CollisionFlags.Below)
-        {
-            m_jumpBufferTimer = 0;
-            return true;
-        }
-
-        return false;
-    }
-
+    #region Jump Code
     public void OnJumpInputDown()
     {
         if (!IsGrounded() && m_wallJumpBufferTimer < m_wallJumpBufferTime)
@@ -530,27 +454,35 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
 
-    public void WallJump()
+    private void CalculateJump()
     {
-
-        m_isWallRunning = false;
-
-        m_velocity.x = m_wallDir.x * m_wallJumpOffVelocity.x;
-        
-        m_velocity.y = m_wallJumpOffVelocity.y;
-
-        m_velocity.z = m_wallDir.z * m_wallJumpOffVelocity.z;
+        m_gravity = -(2 * m_maxJumpHeight) / Mathf.Pow(m_timeToJumpApex, 2);
+        m_maxJumpVelocity = Mathf.Abs(m_gravity) * m_timeToJumpApex;
+        m_minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(m_gravity) * m_minJumpHeight);
     }
 
-    public void JumpMaxVelocity()
+    private void WallJump()
+    {
+        m_isWallRunning = false;
+
+        m_velocity.x = m_wallDir.x * m_wallJumpVelocity.x;
+        m_velocity.y = m_wallJumpVelocity.y;
+        m_velocity.z = m_wallDir.z * m_wallJumpVelocity.z;
+    }
+
+    private void JumpMaxVelocity()
     {
         m_velocity.y = m_maxJumpVelocity;
     }
 
-    public void JumpMinVelocity()
+    private void JumpMinVelocity()
     {
         m_velocity.y = m_minJumpVelocity;
     }
+
+    #endregion
+
+    #region Leap Code
 
     private void RunLeap()
     {
@@ -597,55 +529,9 @@ public class PlayerMovementController : MonoBehaviour
         m_isLeaping = false;
     }
 
+    #endregion
 
-    private bool IsGrounded()
-    {
-        if (m_characterController.collisionFlags == CollisionFlags.Below)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool OnSlope()
-    {
-        RaycastHit hit;
-
-        Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
-
-        if (Physics.Raycast(bottom, Vector3.down, out hit, 0.2f))
-        {
-            if (hit.normal != Vector3.up)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-
-    private IEnumerator KnockBack()
-    {
-        m_isStunned = true;
-
-        m_characterController.enabled = false;
-        m_rb.isKinematic = false;
-
-        m_rb.AddForce(-m_camera.transform.forward * shit, ForceMode.Impulse);
-
-        while (m_isStunned)
-        {
-            yield return null;
-        }
-
-        m_rb.isKinematic = true;
-        m_characterController.enabled = true;
-    }
-
-    #region Camera
+    #region Camera Code
     private void LockCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -696,7 +582,172 @@ public class PlayerMovementController : MonoBehaviour
         public DamageState m_damageState;
         public InputState m_inputState;
     }
+
+    private bool IsGrounded()
+    {
+        if (m_characterController.collisionFlags == CollisionFlags.Below)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool OnSlope()
+    {
+        RaycastHit hit;
+
+        Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
+
+        if (Physics.Raycast(bottom, Vector3.down, out hit, 0.2f))
+        {
+            if (hit.normal != Vector3.up)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void Landed()
+    {
+        m_isLanded = true;
+
+        m_leapBufferTimer = 0;
+    }
     #endregion
+
+    #region Physics Calculation Code
+
+    private void CalculateCurrentSpeed()
+    {
+        float speed = m_baseMovementSpeed;
+
+        speed += m_currentLeapSpeed;
+        speed += m_currentWallRunningSpeed;
+        speed += m_currentSlideSpeed;
+
+        m_currentMovementSpeed = speed;
+    }
+
+    private void CalculateGroundPhysics()
+    {
+        if (IsGrounded() && !OnSlope())
+        {
+            m_velocity.y = 0;
+        }
+
+        if (OnSlope())
+        {
+            RaycastHit hit;
+
+            Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
+
+            if (Physics.Raycast(bottom, Vector3.down, out hit))
+            {
+                m_characterController.Move(new Vector3(0, -(hit.distance), 0));
+            }
+        }
+
+        if (IsGrounded() && !m_isLanded)
+        {
+            Landed();
+        }
+
+        if (!IsGrounded())
+        {
+            m_isLanded = false;
+        }
+    }
+
+    private void CalculateVelocity()
+    {
+        if (m_states.m_gravityControllState == GravityState.GravityEnabled)
+        {
+            m_velocity.y += m_gravity * Time.deltaTime;
+        }
+
+        if (m_states.m_movementControllState == MovementControllState.MovementEnabled)
+        {
+            Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
+
+            Vector3 forwardMovement = transform.forward * input.y;
+            Vector3 rightMovement = transform.right * input.x;
+
+            Vector3 targetHorizontalMovement = Vector3.ClampMagnitude(forwardMovement + rightMovement, 1.0f) * m_currentMovementSpeed;
+            Vector3 horizontalMovement = Vector3.SmoothDamp(m_velocity, targetHorizontalMovement, ref m_velocitySmoothing, m_accelerationTime);
+
+            m_velocity = new Vector3(horizontalMovement.x, m_velocity.y, horizontalMovement.z);
+        }
+
+    }
+    #endregion
+
+    #region Slide Code
+
+    private void StartSlide()
+    {
+        if (!m_isSliding)
+        {
+            if (IsGrounded())
+            {
+                StartCoroutine(Slide());
+            }
+        }
+    }
+
+    private IEnumerator Slide()
+    {
+        m_isSliding = true;
+
+        float t = 0;
+
+        while (t < m_slideTime)
+        {
+            t += Time.deltaTime;
+
+            float progress = m_slideCurve.Evaluate(t / m_slideSpeedUpTime);
+            m_currentSlideSpeed = Mathf.Lerp(0f, m_maxSlideSpeed, progress);
+
+            m_leapingTimer = 0;
+
+            yield return null;
+        }
+
+        m_currentSlideSpeed = 0;
+
+        m_isSliding = false;
+    }
+
+    #endregion
+
+    private void FillSpeedBar()
+    {
+        float progress = m_speedBarCurve.Evaluate(m_currentMovementSpeed / m_maxSpeed);
+
+        m_speedometer.fillAmount = progress;
+
+    }
+
+    private IEnumerator KnockBack()
+    {
+        m_isStunned = true;
+
+        m_characterController.enabled = false;
+        m_rb.isKinematic = false;
+
+        m_rb.AddForce(-m_camera.transform.forward * shit, ForceMode.Impulse);
+
+        while (m_isStunned)
+        {
+            yield return null;
+        }
+
+        m_rb.isKinematic = true;
+        m_characterController.enabled = true;
+    }
+
 
 
     private void OnCollisionEnter(Collision collision)
