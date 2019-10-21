@@ -243,6 +243,8 @@ public class PlayerMovementController : MonoBehaviour
 
         while (m_isWallRunning)
         {
+            m_leapingTimer = 0;
+
             float result = Mathf.Lerp(-m_wallRunCameraMaxTilt, m_wallRunCameraMaxTilt, m_wallFacingVector.y);
             m_tiltTarget = result;
 

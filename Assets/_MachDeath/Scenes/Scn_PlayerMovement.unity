@@ -1117,21 +1117,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4419650568852719279, guid: c2eb00a9c1b7ea24ca920833a620b372,
-        type: 3}
-      propertyPath: m_wallRunBufferTime
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4419650568852719279, guid: c2eb00a9c1b7ea24ca920833a620b372,
-        type: 3}
-      propertyPath: m_wallJumpOffVelocity.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4419650568852719279, guid: c2eb00a9c1b7ea24ca920833a620b372,
-        type: 3}
-      propertyPath: m_wallJumpOffVelocity.y
-      value: 50
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2eb00a9c1b7ea24ca920833a620b372, type: 3}
 --- !u!43 &513631926
