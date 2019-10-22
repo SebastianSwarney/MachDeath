@@ -153,6 +153,13 @@ public class PlayerMovementController : MonoBehaviour
     [Space]
     #endregion
 
+    public Image m_velocitySpeedometer;
+    public Image m_boostSpeedometer;
+    public AnimationCurve m_speedBarCurve;
+    public AnimationCurve m_boostCurve;
+    public float m_maxMovementSpeed;
+    public float m_maxSpeedBoost;
+
     private Vector2 m_movementInput;
     private Vector2 m_lookInput;
 
@@ -161,9 +168,7 @@ public class PlayerMovementController : MonoBehaviour
     public float shit;
     private bool m_isStunned;
 
-    public Image m_speedometer;
-    public AnimationCurve m_speedBarCurve;
-    public float m_maxSpeed;
+
 
     private Coroutine m_wallJumpBufferCoroutine;
     private Coroutine m_jumpBufferCoroutine;
@@ -246,8 +251,9 @@ public class PlayerMovementController : MonoBehaviour
     {
         if (!CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, m_leapBufferCoroutine) && IsGrounded())
         {
-            m_leapCount = 0;
+            //m_leapCount = 0;
         }
+
 
     }
 
@@ -512,6 +518,7 @@ public class PlayerMovementController : MonoBehaviour
 
         if (IsGrounded())
         {
+            m_leapCount = 0;
             JumpMaxVelocity();
             return;
         }
@@ -846,9 +853,12 @@ public class PlayerMovementController : MonoBehaviour
 
     private void FillSpeedBar()
     {
-        float progress = m_speedBarCurve.Evaluate(m_currentMovementSpeed / m_maxSpeed);
+        float progress = m_speedBarCurve.Evaluate(m_velocity.magnitude / m_maxMovementSpeed);
+        m_velocitySpeedometer.fillAmount = progress;
 
-        m_speedometer.fillAmount = progress;
+        float progress2 = m_boostCurve.Evaluate(m_currentMovementSpeed / m_maxSpeedBoost);
+        m_boostSpeedometer.fillAmount = progress2;
+
 
     }
 
