@@ -224,6 +224,7 @@ GameObject:
   - component: {fileID: 4419650568852719274}
   - component: {fileID: 8571380159414952080}
   - component: {fileID: 865858181429369223}
+  - component: {fileID: -2667287903190575809}
   m_Layer: 0
   m_Name: Prfb_Player
   m_TagString: Untagged
@@ -263,7 +264,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1326333985
+  m_SceneId: 1761332022
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,6 +609,18 @@ MonoBehaviour:
   m_visualState: {fileID: 4419650568909376681}
   m_input: {fileID: 1106223046}
   m_movementCont: {fileID: 4419650568852719279}
+--- !u!114 &-2667287903190575809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419650568852719188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f118bd60a44b32b48821ad9ee7778022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4419650568909376681
 GameObject:
   m_ObjectHideFlags: 0
