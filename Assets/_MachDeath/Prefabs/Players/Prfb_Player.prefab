@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 270, y: 170}
+  m_AnchoredPosition: {x: 310, y: 182}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &815992747
@@ -262,8 +262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 1326333985
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,7 +342,7 @@ MonoBehaviour:
     m_damageState: 0
     m_inputState: 0
   m_mouseSensitivity: 0.5
-  m_maxCameraAng: 80
+  m_maxCameraAng: 75
   m_inverted: 1
   m_camera: {fileID: 4419650569349292680}
   m_cameraTilt: {fileID: 2801932473379763313}
@@ -382,7 +382,7 @@ MonoBehaviour:
   m_leapSpeedBoostBase: 5
   m_leapSpeedBoostIncrease: 5
   m_leapSpeedBoostCountMax: 5
-  m_leapBufferTime: 0.5
+  m_leapBufferTime: 0.7
   m_wallMask:
     serializedVersion: 2
     m_Bits: 256
@@ -415,12 +415,12 @@ MonoBehaviour:
   m_tiltSpeed: 0.1
   m_wallRunCameraMaxTilt: 30
   m_wallRidingRayCount: 5
-  m_wallRaySpacing: 180
+  m_wallRaySpacing: 270
   m_wallRunRayLength: 1
   m_wallRunBufferTime: 0.5
   m_wallRunJumpVelocity: {x: 75, y: 15, z: 150}
   m_wallJumpBufferTime: 0.5
-  m_wallJumpVelocity: {x: 100, y: 30, z: 100}
+  m_wallJumpVelocity: {x: 75, y: 15, z: 150}
   m_holdingWallRideStick: 0
   m_wallClimbSpeedCurve:
     serializedVersion: 2
