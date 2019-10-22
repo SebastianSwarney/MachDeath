@@ -52,6 +52,7 @@ public class Health : MonoBehaviour
     public void Respawn()
     {
         StopAllCoroutines();
+        m_isDead = false;
         m_currentHealth = m_maxHealth;
         if (m_useShields) m_currentShieldStrength = m_maxShieldStrength;
     }

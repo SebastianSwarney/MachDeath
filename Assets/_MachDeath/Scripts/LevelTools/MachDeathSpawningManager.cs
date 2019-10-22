@@ -7,9 +7,15 @@ public class MachDeathSpawningManager : MonoBehaviour
     public static MachDeathSpawningManager Instance { get; private set; }
     public List<MachDeathSpawnPoint> m_spawnPoints;
     private List<MachDeathSpawnPoint> m_randomizedSpawns = new List<MachDeathSpawnPoint>();
+    
     private void Awake()
     {
         Instance = this;
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            m_spawnPoints.Add(transform.GetChild(i).GetComponent<MachDeathSpawnPoint>());
+        }
 
         foreach(MachDeathSpawnPoint spawn in m_spawnPoints)
         {
@@ -26,12 +32,14 @@ public class MachDeathSpawningManager : MonoBehaviour
     public Transform NewSpawnPointFFA()
     {
         RandomizeSpawnList();
-        foreach(MachDeathSpawnPoint m_rand in m_spawnPoints)
+        foreach(MachDeathSpawnPoint m_rand in m_randomizedSpawns)
         {
             if (!m_rand.PlayerCloseToSpawn())
             {
+                print(m_rand.gameObject.name);
                 return m_rand.transform;
             }
+            
         }
         return m_randomizedSpawns[Random.Range(0, m_randomizedSpawns.Count)].transform;
     }

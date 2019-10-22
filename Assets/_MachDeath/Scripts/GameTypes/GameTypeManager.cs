@@ -13,7 +13,7 @@ namespace Mirror.MachDeath
         public struct GameStateEvents
         {
             public GameStateEvent m_gameOverState;
-            public GameStateEvent m_gameStateOverTime;
+            public GameStateEvent m_gameTied;
         }
 
         public List<GameObject> m_winningPlayers;

@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class ProjectileProperties : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public PlayerProperties m_spearOwner;
 
-    // Update is called once per frame
-    void Update()
+
+    public void AssignSpear(PlayerProperties m_owner)
     {
-        
+        m_spearOwner = m_owner;
     }
 }

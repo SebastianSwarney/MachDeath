@@ -222,6 +222,8 @@ GameObject:
   - component: {fileID: 4419650568852719279}
   - component: {fileID: 4419650568852719273}
   - component: {fileID: 4419650568852719274}
+  - component: {fileID: 8571380159414952080}
+  - component: {fileID: 865858181429369223}
   m_Layer: 0
   m_Name: Prfb_Player
   m_TagString: Untagged
@@ -260,8 +262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 986371196
+  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
+  m_SceneId: 0
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -534,6 +536,78 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &8571380159414952080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419650568852719188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66e0c5017e23dfb4cbcacefc7576ce5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_maxHealth: 100
+  m_currentHealth: 0
+  m_isDead: 0
+  m_onDied:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 865858181429369223}
+        m_MethodName: OnDied
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: HealthEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_useShields: 0
+  m_shieldDamageMultiplier: 0.75
+  m_maxShieldStrength: 0
+  m_currentShieldStrength: 0
+  m_shieldRegeneration: 1
+  m_shieldRegenDelay: 0
+  m_shieldRegenTimeToFull: 0
+  m_useHealthRegeneration: 0
+  m_maxHealthRegenerationAmount: 0
+  m_healthRegnerationDelay: 0
+  m_healthRegenTimeToFull: 0
+--- !u!114 &865858181429369223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419650568852719188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6fc79a36b197f047abf91f7f403b547, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_deathTimer: 1
+  m_healthEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8571380159414952080}
+        m_MethodName: Respawn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: HealthEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_visualState: {fileID: 4419650568909376681}
+  m_input: {fileID: 1106223046}
+  m_movementCont: {fileID: 4419650568852719279}
 --- !u!1 &4419650568909376681
 GameObject:
   m_ObjectHideFlags: 0

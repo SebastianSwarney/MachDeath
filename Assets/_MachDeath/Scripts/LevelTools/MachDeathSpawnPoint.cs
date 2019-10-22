@@ -11,10 +11,17 @@ public class MachDeathSpawnPoint : MonoBehaviour
     [Header("Debugging")]
     public bool m_isDebugging = true;
     public Color m_debuggingColor;
+    
 
     public bool PlayerCloseToSpawn()
     {
-        return !(Physics.OverlapSphere(transform.position, m_playerDetectionRadius, m_playerMask).Length < 0);
+        Collider[] cols = Physics.OverlapSphere(transform.position, m_playerDetectionRadius, m_playerMask);
+
+        if (cols.Length > 0)
+        {
+            print("Player in postion :" + gameObject.name);
+        }
+        return (cols.Length > 0);
     }
 
     private void OnDrawGizmos()
