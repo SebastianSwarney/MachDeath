@@ -9,7 +9,6 @@ public class Health : MonoBehaviour
 {
     #region Generic Health Values
     public float m_maxHealth;
-    [HideInInspector]
     public float m_currentHealth;
     [HideInInspector]
     public bool m_isDead;
@@ -73,7 +72,15 @@ public class Health : MonoBehaviour
     {
         if (!m_isDead)
         {
-            m_currentHealth += p_appliedHealth;
+            if (m_currentHealth > m_maxHealth)
+            {
+                m_currentHealth += p_appliedHealth;
+                if (m_currentHealth > m_maxHealth)
+                {
+                    m_currentHealth = m_maxHealth;
+                }
+            }
+            
 
         }
     }
