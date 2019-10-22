@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 62257888}
   - component: {fileID: 62257887}
   - component: {fileID: 62257886}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Cube
   m_TagString: Finish
   m_Icon: {fileID: 0}
@@ -440,7 +440,7 @@ GameObject:
   - component: {fileID: 78950847}
   - component: {fileID: 78950846}
   - component: {fileID: 78950845}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -532,7 +532,7 @@ GameObject:
   - component: {fileID: 115676985}
   - component: {fileID: 115676984}
   - component: {fileID: 115676983}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -724,7 +724,7 @@ GameObject:
   - component: {fileID: 316969419}
   - component: {fileID: 316969418}
   - component: {fileID: 316969417}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1048,7 +1048,7 @@ MonoBehaviour:
   m_aimAssistImage: {fileID: 1393260918}
   m_obstructingLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2147483648
   m_predictionRadius: 22.61
   m_predictionLength: 60
   m_predictionLayer:
@@ -1094,7 +1094,7 @@ GameObject:
   - component: {fileID: 1169823148}
   - component: {fileID: 1169823147}
   - component: {fileID: 1169823146}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Cube (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2005,7 +2005,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1821754347}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
