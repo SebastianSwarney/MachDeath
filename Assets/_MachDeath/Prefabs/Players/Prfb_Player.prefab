@@ -144,7 +144,7 @@ MonoBehaviour:
   m_leapSpeedBoostBase: 5
   m_leapSpeedBoostIncrease: 5
   m_leapSpeedBoostCountMax: 5
-  m_leapBufferTime: 0.1
+  m_leapBufferTime: 0.5
   m_wallMask:
     serializedVersion: 2
     m_Bits: 256
@@ -179,9 +179,11 @@ MonoBehaviour:
   m_wallRidingRayCount: 5
   m_wallRaySpacing: 180
   m_wallRunRayLength: 1
-  m_wallRunBufferTime: 0.3
+  m_wallRunBufferTime: 0.5
+  m_wallRunJumpVelocity: {x: 75, y: 15, z: 150}
   m_wallJumpBufferTime: 0.5
-  m_wallJumpVelocity: {x: 0, y: 0, z: 0}
+  m_wallJumpVelocity: {x: 100, y: 30, z: 100}
+  m_holdingWallRideStick: 0
   m_slideTime: 3
   m_slideCurve:
     serializedVersion: 2
