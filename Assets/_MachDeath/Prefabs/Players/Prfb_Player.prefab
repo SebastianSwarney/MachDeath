@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 270, y: 170}
+  m_AnchoredPosition: {x: 310, y: 182}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &815992747
@@ -224,6 +224,7 @@ GameObject:
   - component: {fileID: 4419650568852719274}
   - component: {fileID: 8571380159414952080}
   - component: {fileID: 865858181429369223}
+  - component: {fileID: -2667287903190575809}
   m_Layer: 0
   m_Name: Prfb_Player
   m_TagString: Untagged
@@ -262,8 +263,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 1761332022
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,7 +343,7 @@ MonoBehaviour:
     m_damageState: 0
     m_inputState: 0
   m_mouseSensitivity: 0.5
-  m_maxCameraAng: 80
+  m_maxCameraAng: 75
   m_inverted: 1
   m_camera: {fileID: 4419650569349292680}
   m_cameraTilt: {fileID: 2801932473379763313}
@@ -382,7 +383,7 @@ MonoBehaviour:
   m_leapSpeedBoostBase: 5
   m_leapSpeedBoostIncrease: 5
   m_leapSpeedBoostCountMax: 5
-  m_leapBufferTime: 0.5
+  m_leapBufferTime: 0.7
   m_wallMask:
     serializedVersion: 2
     m_Bits: 256
@@ -415,12 +416,12 @@ MonoBehaviour:
   m_tiltSpeed: 0.1
   m_wallRunCameraMaxTilt: 30
   m_wallRidingRayCount: 5
-  m_wallRaySpacing: 180
+  m_wallRaySpacing: 270
   m_wallRunRayLength: 1
   m_wallRunBufferTime: 0.5
   m_wallRunJumpVelocity: {x: 75, y: 15, z: 150}
   m_wallJumpBufferTime: 0.5
-  m_wallJumpVelocity: {x: 100, y: 30, z: 100}
+  m_wallJumpVelocity: {x: 75, y: 15, z: 150}
   m_holdingWallRideStick: 0
   m_wallClimbSpeedCurve:
     serializedVersion: 2
@@ -608,6 +609,18 @@ MonoBehaviour:
   m_visualState: {fileID: 4419650568909376681}
   m_input: {fileID: 1106223046}
   m_movementCont: {fileID: 4419650568852719279}
+--- !u!114 &-2667287903190575809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419650568852719188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f118bd60a44b32b48821ad9ee7778022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4419650568909376681
 GameObject:
   m_ObjectHideFlags: 0
