@@ -12,10 +12,15 @@ namespace Mirror.MachDeath{
             public string m_playerName;
             public PlayerProperties m_player;
             public int m_killCount;
-            
+
+            public PlayerStats(string p_playerName, PlayerProperties p_playerProp)
+            {
+                m_playerName = p_playerName;
+                m_player = p_playerProp;
+            }
         }
 
-        public List<PlayerStats> m_playerStats;
+        private List<PlayerStats> m_playerStats = new List<PlayerStats>();
         public int m_killsToWin;
         public float m_matchTime;
         public MapTypeSetup m_mapSetup;
@@ -35,20 +40,41 @@ namespace Mirror.MachDeath{
         {
             GameTypeManager.Instance = null;
         }
+        [Server]
+        public override void AssignPlayer(PlayerProperties p_playerProperties)
+        {
+            
+            m_playerStats.Add(new PlayerStats(p_playerProperties.m_playerName, p_playerProperties));
+        }
 
         [Server]
-        public override void PlayerDied(Health p_playerHealth, PlayerProperties p_projectileOwner)
+        public override void PlayerDied(PlayerProperties p_diedPlayer, PlayerProperties p_projectileOwner)
         {
-            foreach(PlayerStats newStat in m_playerStats)
+            if (p_projectileOwner != null)
             {
-                if (newStat.m_player == p_projectileOwner)
+
+
+                foreach (PlayerStats newStat in m_playerStats)
                 {
-                    newStat.m_killCount += 1;
-                    if (newStat.m_killCount >= m_killsToWin)
+                    if (newStat.m_player == p_projectileOwner)
                     {
-                        GameWin(newStat.m_player);
-                        StopCoroutine(m_matchTimer);
-                        break;
+                        newStat.m_killCount += 1;
+                        if (newStat.m_killCount >= m_killsToWin)
+                        {
+                            GameWin(newStat.m_player);
+                            StopCoroutine(m_matchTimer);
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (PlayerStats newStat in m_playerStats)
+                {
+                    if (newStat.m_player == p_diedPlayer)
+                    {
+                        newStat.m_killCount -= 1;
                     }
                 }
             }

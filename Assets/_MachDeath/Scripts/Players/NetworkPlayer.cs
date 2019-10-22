@@ -19,9 +19,14 @@ namespace Mirror.MachDeath{
 
         private void Start()
         {
-            if (m_singlePlayer.enabled)
+            if (m_singlePlayer != null)
             {
-                //m_singlePlayer.enabled = false;
+
+
+                if (m_singlePlayer.enabled)
+                {
+                    //m_singlePlayer.enabled = false;
+                }
             }
         }
 

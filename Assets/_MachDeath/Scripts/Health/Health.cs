@@ -5,6 +5,9 @@ using UnityEngine;
 
 [System.Serializable]
 public class HealthEvent : UnityEngine.Events.UnityEvent { }
+
+[System.Serializable]
+public class HealthAttackedEvent: UnityEngine.Events.UnityEvent<PlayerProperties> { }
 public class Health : MonoBehaviour
 {
     #region Generic Health Values
@@ -13,6 +16,7 @@ public class Health : MonoBehaviour
     [HideInInspector]
     public bool m_isDead;
     public HealthEvent m_onDied = new HealthEvent();
+    public HealthAttackedEvent m_onKilled = new HealthAttackedEvent();
     
     #endregion
 
@@ -69,6 +73,19 @@ public class Health : MonoBehaviour
         }
 
     }
+
+    public void TakeDamageSpear(float p_appliedDamage, PlayerProperties p_spearOwner)
+    {
+        if (!m_isDead)
+        {
+            DealDamage(p_appliedDamage);
+            if (m_isDead)
+            {
+                m_onKilled.Invoke(p_spearOwner);
+            }
+        }
+    }
+
     public void HealHealth(float p_appliedHealth)
     {
         if (!m_isDead)

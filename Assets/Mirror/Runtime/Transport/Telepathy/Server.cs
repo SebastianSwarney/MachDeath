@@ -79,7 +79,7 @@ namespace Telepathy
                 listener.Server.NoDelay = NoDelay;
                 listener.Server.SendTimeout = SendTimeout;
                 listener.Start();
-                Logger.Log("Server: listening port=" + port);
+
 
                 // keep accepting new clients
                 while (true)
@@ -191,7 +191,7 @@ namespace Telepathy
             // start the listener thread
             // (on low priority. if main thread is too busy then there is not
             //  much value in accepting even more clients)
-            Logger.Log("Server: Start port=" + port);
+
             listenerThread = new Thread(() => { Listen(port); });
             listenerThread.IsBackground = true;
             listenerThread.Priority = ThreadPriority.BelowNormal;
@@ -204,7 +204,7 @@ namespace Telepathy
             // only if started
             if (!Active) return;
 
-            Logger.Log("Server: stopping...");
+
 
             // stop listening to connections so that no one can connect while we
             // close the client connections

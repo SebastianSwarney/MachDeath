@@ -20,7 +20,9 @@ namespace Mirror.MachDeath
 
         public GameStateEvents m_gameStateEvents;
         public static GameTypeManager Instance { get; set; }
-        public abstract void PlayerDied(Health p_playerHealth, PlayerProperties p_projectileOwner);
+        public abstract void PlayerDied(PlayerProperties p_diedPlayer, PlayerProperties p_projectileOwner);
 
+
+        public abstract void AssignPlayer(PlayerProperties p_playerProperties);
     }
 }

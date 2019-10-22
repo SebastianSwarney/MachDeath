@@ -218,7 +218,7 @@ namespace Mirror
         /// </summary>
         public virtual void Awake()
         {
-            Debug.Log("Thank you for using Mirror! https://mirror-networking.com");
+            
 
             // Set the networkSceneName to prevent a scene reload
             // if client connection to server fails.
@@ -440,14 +440,14 @@ namespace Mirror
             if (NetworkClient.isConnected)
             {
                 StopClient();
-                print("OnApplicationQuit: stopped client");
+
             }
 
             // stop server after stopping client (for proper host mode stopping)
             if (NetworkServer.active)
             {
                 StopServer();
-                print("OnApplicationQuit: stopped server");
+
             }
 
             // stop transport (e.g. to shut down threads)
