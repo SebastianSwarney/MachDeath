@@ -69,6 +69,14 @@ public class Health : MonoBehaviour
         }
 
     }
+    public void HealHealth(float p_appliedHealth)
+    {
+        if (!m_isDead)
+        {
+            m_currentHealth += p_appliedHealth;
+
+        }
+    }
 
     public void TakeDamageExplosion(float p_appliedDamage, Vector3 p_explosionPosition, float p_explosionForce, float p_explosionRadius)
     {
