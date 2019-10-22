@@ -124,6 +124,21 @@ public class PlayerMovementController : MonoBehaviour
     [Space]
     #endregion
 
+    #region Wall Climb Properties
+    [Header("Wall Climb Properties")]
+
+    public AnimationCurve m_wallClimbSpeedCurve;
+    public float m_maxWallClimbSpeed;
+    public float m_wallClimbSpeedUpTime;
+    public float m_wallClimbFactor;
+    public Vector3 m_wallClimbJumpVelocity;
+
+    private float m_currentWallClimbSpeed;
+    private bool m_isWallClimbing;
+    private Vector3 m_localWallFacingVector;
+    [Space]
+    #endregion
+
     #region Slide Properties
     [Header("Slide Properties")]
 
@@ -155,6 +170,9 @@ public class PlayerMovementController : MonoBehaviour
     private Coroutine m_graceBufferCoroutine;
     private Coroutine m_leapBufferCoroutine;
     private Coroutine m_wallRunBufferCoroutine;
+
+
+
 
 
     private void Start()
@@ -301,14 +319,16 @@ public class PlayerMovementController : MonoBehaviour
                 {
                     anyRayHit = true;
 
+                    m_wallVector = Vector3.Cross(hit.normal, Vector3.up);
+                    m_wallFacingVector = Vector3.Cross(hit.normal, m_camera.transform.forward);
+                    m_wallDir = hit.normal;
+
+                    m_localWallFacingVector = m_camera.transform.InverseTransformDirection(m_wallFacingVector); 
+
                     if (!m_connectedWithWall)
                     {
                         OnWallConnect();
                     }
-
-                    m_wallVector = Vector3.Cross(hit.normal, Vector3.up);
-                    m_wallFacingVector = Vector3.Cross(hit.normal, m_camera.transform.forward);
-                    m_wallDir = hit.normal;
 
                     CheckToStartWallRun();
                 }
@@ -320,6 +340,7 @@ public class PlayerMovementController : MonoBehaviour
         if (!anyRayHit)
         {
             m_isWallRunning = false;
+            m_isWallClimbing = false;
             m_connectedWithWall = false;
         }
 
@@ -339,7 +360,7 @@ public class PlayerMovementController : MonoBehaviour
     private void OnWallRideRelease()
     {
         m_isWallRunning = false;
-
+        m_isWallClimbing = false;
         m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
     }
 
@@ -347,16 +368,72 @@ public class PlayerMovementController : MonoBehaviour
     {
         if (m_holdingWallRideStick)
         {
+            if (m_isWallClimbing)
+            {
+                return;
+            }
+
+            if (m_isWallRunning)
+            {
+                return;
+            }
+
+            if (m_localWallFacingVector.x >= m_wallClimbFactor)
+            {
+                if (!m_isWallClimbing)
+                {
+                    if (CheckOverBuffer(ref m_wallRunBufferTimer, ref m_wallRunBufferTime, m_wallRunBufferCoroutine))
+                    {
+                        StartCoroutine(WallClimbing());
+                        return;
+                    }
+                }
+            }
+
             if (!m_isWallRunning)
             {
                 if (CheckOverBuffer(ref m_wallRunBufferTimer, ref m_wallRunBufferTime, m_wallRunBufferCoroutine))
                 {
                     StartCoroutine(WallRunning());
                     return;
+
                 }
             }
         }
 
+    }
+
+    private IEnumerator WallClimbing()
+    {
+        m_isWallClimbing = true;
+
+        m_states.m_gravityControllState = GravityState.GravityDisabled;
+        m_states.m_movementControllState = MovementControllState.MovementDisabled;
+
+        m_currentWallClimbSpeed = 0;
+
+        float t = 0;
+
+        while (m_isWallClimbing)
+        {
+            t += Time.deltaTime;
+
+            m_leapingTimer = 0;
+
+            m_velocity = Vector3.zero;
+
+            m_velocity.y = m_localWallFacingVector.x* m_currentMovementSpeed;
+
+            float progress = m_wallClimbSpeedCurve.Evaluate(t / m_wallClimbSpeedUpTime);
+            m_currentWallClimbSpeed = Mathf.Lerp(0f, m_maxWallClimbSpeed, progress);
+
+            yield return null;
+        }
+
+        m_states.m_movementControllState = MovementControllState.MovementEnabled;
+        m_states.m_gravityControllState = GravityState.GravityEnabled;
+
+        m_currentWallClimbSpeed = 0;
     }
 
     private IEnumerator WallRunning()
@@ -421,6 +498,12 @@ public class PlayerMovementController : MonoBehaviour
             return;
         }
 
+        if (m_isWallClimbing)
+        {
+            WallRunningJump();
+            return;
+        }
+
         if (m_isWallRunning)
         {
             WallRunningJump();
@@ -470,6 +553,19 @@ public class PlayerMovementController : MonoBehaviour
         m_velocity.x = m_wallDir.x * m_wallRunJumpVelocity.x;
         m_velocity.y = m_wallRunJumpVelocity.y;
         m_velocity.z = m_wallDir.z * m_wallRunJumpVelocity.z;
+    }
+
+    private void WallClimbingJump()
+    {
+        m_isWallClimbing = false;
+
+        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
+
+        m_leapingTimer = 0;
+
+        m_velocity.x = m_wallDir.x * m_wallClimbJumpVelocity.x;
+        m_velocity.y = m_wallClimbJumpVelocity.y;
+        m_velocity.z = m_wallDir.z * m_wallClimbJumpVelocity.z;
     }
 
     private void JumpMaxVelocity()
@@ -644,6 +740,7 @@ public class PlayerMovementController : MonoBehaviour
         speed += m_currentLeapSpeed;
         speed += m_currentWallRunningSpeed;
         speed += m_currentSlideSpeed;
+        speed += m_currentWallClimbSpeed;
 
         m_currentMovementSpeed = speed;
     }
