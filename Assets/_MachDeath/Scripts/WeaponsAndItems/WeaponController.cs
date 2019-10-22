@@ -6,9 +6,6 @@ public class WeaponController : MonoBehaviour
 {
     //public bool isSpear, isActive;
 
-    [SerializeField]
-    private GameObject hitMarker;
-
     //Item properties
     [SerializeField]
     private List<GameObject> weapons = new List<GameObject>();

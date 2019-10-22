@@ -8,6 +8,7 @@ public class MiscBase : ItemBase
     void Start()
     {
         GetItemType();
+        GetItemData();
     }
     protected override void GetItemType()
     {
@@ -16,7 +17,8 @@ public class MiscBase : ItemBase
 
     protected override void GetItemData()
     {
-
+        //Get reference to fps Camera and WeaponController//Should be item controller
+        base.GetData();
     }
 
     protected override void ApplyUseItem()

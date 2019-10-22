@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: ShieldCoolDown
   m_EditorClassIdentifier: 
   itemCoolDown: 2
+  hitMarker: {fileID: 6394898243497993913, guid: e6f96ace31b38fd4ebb6574f07fc5c16,
+    type: 3}

@@ -15,6 +15,8 @@ public abstract class ItemBase : MonoBehaviour
 
     //Shared parameters and data
     protected AudioSource ItemSound;
+
+    [SerializeField]
     protected Camera fpsCam;
     protected Vector3 rayOrigin;
     protected RaycastHit hit;
@@ -24,21 +26,24 @@ public abstract class ItemBase : MonoBehaviour
     public enum Item { weapon, utility, misc }
     public Item ItemType;
 
-    protected abstract void GetItemType();
-    protected abstract void GetItemData();
-    protected abstract void ApplyUseItem();
-
     //Start is called before the first frame update
     void Start()
     {
+
+    }
+
+    public virtual void GetData()
+    {
         weaponController = GetComponentInParent<WeaponController>();
         fpsCam = GetComponentInParent<Camera>();
+        hitMarker = itemstats._hitMarker;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     public void UseItem(float? itemCoolDown)
     {
@@ -48,7 +53,8 @@ public abstract class ItemBase : MonoBehaviour
             readyToUse = false;
             Invoke("SetReadyToFire", itemstats._itemCoolDown);
 
-            //rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, .0f));
+            //Gets an updated ray everytime you click shoot
+            rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, .0f));
             ApplyUseItem();
             //weaponSound.Play();
         }
@@ -59,4 +65,8 @@ public abstract class ItemBase : MonoBehaviour
     {
         readyToUse = true;
     }
+    protected abstract void GetItemType();
+    protected abstract void GetItemData();
+    protected abstract void ApplyUseItem();
+
 }

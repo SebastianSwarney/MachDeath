@@ -85,10 +85,7 @@ public class PlayerMouseItemsInput : MonoBehaviour
         }
 
         var Items2 = weaponController.usableItemsRightClick;
-
-
-        //For shield can not really use this index since the mouse scroll wheel is always set to the usable items 
-        //such as weapons and 
+        //For shield can not really use this index since the mouse scroll wheel is always set to the weapons
 
         if (Items2[currentRightUsableIndex])
         {
