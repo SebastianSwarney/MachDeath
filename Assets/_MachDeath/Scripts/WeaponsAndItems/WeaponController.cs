@@ -21,7 +21,6 @@ public class WeaponController : MonoBehaviour
 
     //[SerializeField]
     public List<GameObject> usableItemsRightClick = new List<GameObject>();
-
     public List<GameObject> usableItemsLeftClick = new List<GameObject>();
 
     //These should be in weapon stats
