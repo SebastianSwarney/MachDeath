@@ -9,6 +9,8 @@ public class RandomMovement : MonoBehaviour
 
     private int moveIndex = 0;
     private float minDistance = 3f;
+
+    [SerializeField]
     private float speed;
 
     // Start is called before the first frame update
