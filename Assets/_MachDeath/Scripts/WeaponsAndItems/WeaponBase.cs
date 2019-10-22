@@ -49,9 +49,8 @@ public class WeaponBase : ItemBase
         GameObject spear = Instantiate(spearPrefab);
         spear.transform.position = this.transform.position;
         spear.transform.rotation = this.transform.rotation;
-        spear.GetComponent<Rigidbody>().velocity = spear.transform.forward * 100f;
-
-        spear.transform.LookAt((CalculateShot()) - spear.transform.position);
+        spear.GetComponent<Rigidbody>().velocity = (spear.transform.forward) * 100f;
+        this.transform.LookAt((CalculateShot()));
     }
 
     private void TestAssist()
@@ -80,7 +79,7 @@ public class WeaponBase : ItemBase
         }
         else
         {
-            return (transform.position + fpsCam.transform.forward * 100f);
+            return (transform.position + this.transform.forward * 100f);
         }
     }
 
@@ -95,7 +94,7 @@ public class WeaponBase : ItemBase
         }
         else
         {
-            return (transform.position + fpsCam.transform.forward * 100f);
+            return (transform.position + this.transform.forward * 100f);
         }
     }
 
