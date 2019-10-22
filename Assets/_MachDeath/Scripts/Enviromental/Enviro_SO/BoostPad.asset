@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3958dbebab85814dbce5c9c49b6d18e, type: 3}
   m_Name: BoostPad
   m_EditorClassIdentifier: 
-  m_Player: {fileID: 4638221606753771318, guid: 5991ab48ba0349d4b86fec46404e5635,
-    type: 3}
-  m_Force: 1500
+  name: BoostPad
+  m_Force: 30
+  m_HealthPickUpAmount: 0

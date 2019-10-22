@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3958dbebab85814dbce5c9c49b6d18e, type: 3}
-  m_Name: Health
+  m_Name: HealthPickup
   m_EditorClassIdentifier: 
-  name: 
+  name: HealthPickup
   m_Force: 0
+  m_HealthPickUpAmount: 50
