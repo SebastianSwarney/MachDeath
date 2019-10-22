@@ -114,6 +114,7 @@ public class PlayerMovementController : MonoBehaviour
     private float m_tiltSmoothingVelocity;
 
     private bool m_isWallRunning;
+    private bool m_connectedWithWall;
     public bool m_holdingWallRideStick;
 
     private Vector3 m_wallDir;
@@ -149,6 +150,11 @@ public class PlayerMovementController : MonoBehaviour
     public AnimationCurve m_speedBarCurve;
     public float m_maxSpeed;
 
+    private Coroutine m_wallJumpBufferCoroutine;
+    private Coroutine m_jumpBufferCoroutine;
+    private Coroutine m_graceBufferCoroutine;
+    private Coroutine m_leapBufferCoroutine;
+    private Coroutine m_wallRunBufferCoroutine;
 
 
     private void Start()
@@ -178,7 +184,7 @@ public class PlayerMovementController : MonoBehaviour
 
         CalculateCurrentSpeed();
 
-        //FillSpeedBar();
+        FillSpeedBar();
 
         CheckWallRun();
 
@@ -220,36 +226,20 @@ public class PlayerMovementController : MonoBehaviour
 
     private void InputBuffering()
     {
-        if (!CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime) && IsGrounded())
+        if (!CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, m_leapBufferCoroutine) && IsGrounded())
         {
             m_leapCount = 0;
         }
 
     }
 
-    private bool CheckBuffer(ref float p_bufferTimer, ref float p_bufferTime)
+    private bool CheckBuffer(ref float p_bufferTimer, ref float p_bufferTime, Coroutine p_bufferTimerRoutine)
     {
         if (p_bufferTimer < p_bufferTime)
         {
-            p_bufferTimer = p_bufferTime;
-
-            return true;
-        }
-        else if (p_bufferTimer >= p_bufferTime)
-        {
-            return false;
-        }
-
-        return false;
-    }
-
-    private bool CheckBuffer(ref float p_bufferTimer, ref float p_bufferTime, bool p_extraConditional)
-    {
-        if (p_bufferTimer < p_bufferTime)
-        {
-            if (p_extraConditional == false)
+            if (p_bufferTimerRoutine != null)
             {
-                return false;
+                StopCoroutine(p_bufferTimerRoutine);
             }
 
             p_bufferTimer = p_bufferTime;
@@ -264,32 +254,7 @@ public class PlayerMovementController : MonoBehaviour
         return false;
     }
 
-
-    private bool CheckBuffer(ref float p_bufferTimer, ref float p_bufferTime, bool[] p_extraConditionals)
-    {
-        if (p_bufferTimer < p_bufferTime)
-        {
-            for (int i = 0; i < p_extraConditionals.Length; i++)
-            {
-                if (p_extraConditionals[i] == false)
-                {
-                    return false;
-                }
-            }
-
-            p_bufferTimer = p_bufferTime;
-
-            return true;
-        }
-        else if (p_bufferTimer >= p_bufferTime)
-        {
-            return false;
-        }
-
-        return false;
-    }
-
-    private bool CheckOverBuffer(ref float p_bufferTimer, ref float p_bufferTime)
+    private bool CheckOverBuffer(ref float p_bufferTimer, ref float p_bufferTime, Coroutine p_bufferTimerRoutine)
     {
         if (p_bufferTimer >= p_bufferTime)
         {
@@ -301,6 +266,7 @@ public class PlayerMovementController : MonoBehaviour
         return false;
     }
 
+    //Might want to change this so it does not feed the garbage collector monster
     private IEnumerator RunBufferTimer(System.Action<float> m_bufferTimerRef, float p_bufferTime)
     {
         float t = 0;
@@ -335,11 +301,14 @@ public class PlayerMovementController : MonoBehaviour
                 {
                     anyRayHit = true;
 
+                    if (!m_connectedWithWall)
+                    {
+                        OnWallConnect();
+                    }
+
                     m_wallVector = Vector3.Cross(hit.normal, Vector3.up);
                     m_wallFacingVector = Vector3.Cross(hit.normal, m_camera.transform.forward);
                     m_wallDir = hit.normal;
-
-                    StartCoroutine(RunBufferTimer((x) => m_wallJumpBufferTimer = (x), m_wallJumpBufferTime));
 
                     CheckToStartWallRun();
                 }
@@ -351,8 +320,15 @@ public class PlayerMovementController : MonoBehaviour
         if (!anyRayHit)
         {
             m_isWallRunning = false;
+            m_connectedWithWall = false;
         }
 
+    }
+
+    private void OnWallConnect()
+    {
+        m_connectedWithWall = true;
+        m_wallJumpBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallJumpBufferTimer = (x), m_wallJumpBufferTime));
     }
 
     private void TiltLerp()
@@ -364,7 +340,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_isWallRunning = false;
 
-        StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
+        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
     }
 
     private void CheckToStartWallRun()
@@ -373,7 +349,7 @@ public class PlayerMovementController : MonoBehaviour
         {
             if (!m_isWallRunning)
             {
-                if (CheckOverBuffer(ref m_wallRunBufferTimer, ref m_wallRunBufferTime))
+                if (CheckOverBuffer(ref m_wallRunBufferTimer, ref m_wallRunBufferTime, m_wallRunBufferCoroutine))
                 {
                     StartCoroutine(WallRunning());
                     return;
@@ -425,21 +401,21 @@ public class PlayerMovementController : MonoBehaviour
     #region Jump Code
     public void OnJumpInputDown()
     {
-        StartCoroutine(RunBufferTimer((x) => m_jumpBufferTimer = (x), m_jumpBufferTime));
+        m_jumpBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_jumpBufferTimer = (x), m_jumpBufferTime));
 
-        if (CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, IsGrounded()))
+        if (CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, m_leapBufferCoroutine) && IsGrounded())
         {
             RunLeap();
             return;
         }
 
-        if (CheckBuffer(ref m_wallJumpBufferTimer, ref m_wallJumpBufferTime, !m_isWallRunning))
+        if (CheckBuffer(ref m_wallJumpBufferTimer, ref m_wallJumpBufferTime, m_wallJumpBufferCoroutine) && !m_isWallRunning)
         {
             WallJump();
             return;
         }
 
-        if (CheckBuffer(ref m_graceTimer, ref m_graceTime, new bool[] { !IsGrounded(), m_velocity.y <= 0 }))
+        if (CheckBuffer(ref m_graceTimer, ref m_graceTime, m_graceBufferCoroutine) && !IsGrounded() && m_velocity.y <= 0f)
         {
             JumpMaxVelocity();
             return;
@@ -461,12 +437,10 @@ public class PlayerMovementController : MonoBehaviour
 
     public void OnJumpInputUp()
     {
-        /*
         if (m_velocity.y > m_minJumpVelocity)
         {
             JumpMinVelocity();
         }
-        */
     }
 
     private void CalculateJump()
@@ -489,7 +463,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_isWallRunning = false;
 
-        StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
+        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
 
         m_leapingTimer = 0;
 
@@ -644,19 +618,19 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_isLanded = true;
         
-        if (CheckBuffer(ref m_jumpBufferTimer, ref m_jumpBufferTime))
+        if (CheckBuffer(ref m_jumpBufferTimer, ref m_jumpBufferTime, m_jumpBufferCoroutine))
         {
             RunLeap();
         }
 
-        StartCoroutine(RunBufferTimer((x) => m_leapBufferTimer = (x), m_leapBufferTime));
+        m_leapBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_leapBufferTimer = (x), m_leapBufferTime));
     }
 
     private void OnOffLedge()
     {
         m_offLedge = true;
 
-        StartCoroutine(RunBufferTimer((x) => m_graceTimer = (x), m_graceTime));
+        m_graceBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_graceTimer = (x), m_graceTime));
 
     }
     #endregion
