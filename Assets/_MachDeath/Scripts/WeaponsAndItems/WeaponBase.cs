@@ -80,7 +80,7 @@ public class WeaponBase : ItemBase
         }
         else
         {
-            return (transform.position + transform.forward * 100f);
+            return (transform.position + fpsCam.transform.forward * 100f);
         }
     }
 
@@ -95,7 +95,7 @@ public class WeaponBase : ItemBase
         }
         else
         {
-            return (transform.position + transform.forward * 100f);
+            return (transform.position + fpsCam.transform.forward * 100f);
         }
     }
 
