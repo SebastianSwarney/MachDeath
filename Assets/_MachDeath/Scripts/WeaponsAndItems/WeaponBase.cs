@@ -10,6 +10,9 @@ public class WeaponBase : ItemBase
     [SerializeField]
     private LayerMask targetLayerMask;
 
+    [SerializeField]
+    private float sphereCastSize;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,16 +49,18 @@ public class WeaponBase : ItemBase
         GameObject spear = Instantiate(spearPrefab);
         spear.transform.position = this.transform.position;
         spear.transform.rotation = this.transform.rotation;
-        spear.GetComponent<Rigidbody>().velocity = this.transform.parent.forward * 100f;
-        spear.transform.LookAt((CalculateShot().point) + new Vector3(0, -90, 0) - spear.transform.position);
+        spear.GetComponent<Rigidbody>().velocity = spear.transform.forward * 100f;
+
+        spear.transform.LookAt((CalculateShot()) - spear.transform.position);
     }
 
     private void TestAssist()
     {
-        if (Physics.SphereCast(rayOrigin, 3.5f, fpsCam.transform.forward, out hit, Mathf.Infinity, ~targetLayerMask))
+        if (Physics.SphereCast(rayOrigin, sphereCastSize, fpsCam.transform.forward, out hit, Mathf.Infinity, targetLayerMask))
         {
             Debug.Log("I hit " + hit.collider.name);
-            this.transform.LookAt((CalculateShotNoMarker().point) + new Vector3(0, -90, 0));
+            this.transform.LookAt((CalculateShotNoMarker()));
+            Debug.DrawLine(transform.position, hit.point, Color.cyan);
             return;
         }
         else
@@ -64,62 +69,44 @@ public class WeaponBase : ItemBase
         }
     }
 
-    private RaycastHit CalculateShot()
+    private Vector3 CalculateShot()
     {
-        if (Physics.SphereCast(rayOrigin, 3.5f, fpsCam.transform.forward, out hit, Mathf.Infinity, ~targetLayerMask))
+        if (Physics.SphereCast(rayOrigin, sphereCastSize, fpsCam.transform.forward, out hit, Mathf.Infinity, targetLayerMask))
         {
             Debug.Log("I hit " + hit.collider.name);
             OnRayCastHit();
 
-            return hit;
+            return hit.point;
         }
         else
         {
-            return hit;
+            return (transform.position + transform.forward * 100f);
         }
-
-        //if (Physics.Raycast(rayOrigin, 0.1f, fpsCam.transform.forward, out hit, Mathf.Infinity))
-        //{
-        //    Debug.Log("I hit " + hit.collider.name);
-        //    OnRayCastHit();
-
-        //    return hit;
-        //}
-        //else
-        //{
-        //    return hit;
-        //}
     }
 
-    private RaycastHit CalculateShotNoMarker()
+    private Vector3 CalculateShotNoMarker()
     {
-        if (Physics.SphereCast(rayOrigin, 3.5f, fpsCam.transform.forward, out hit, Mathf.Infinity))
+        if (Physics.SphereCast(rayOrigin, sphereCastSize, fpsCam.transform.forward, out hit, Mathf.Infinity, targetLayerMask))
         {
-            //Debug.Log("I hit " + hit.collider.name);
+            Debug.Log("I hit " + hit.collider.name);
             //OnRayCastHit();
 
-            return hit;
+            return hit.point;
         }
         else
         {
-            return hit;
+            return (transform.position + transform.forward * 100f);
         }
-
-        //if (Physics.Raycast(rayOrigin, 0.1f, fpsCam.transform.forward, out hit, Mathf.Infinity))
-        //{
-        //    Debug.Log("I hit " + hit.collider.name);
-        //    OnRayCastHit();
-
-        //    return hit;
-        //}
-        //else
-        //{
-        //    return hit;
-        //}
     }
 
     private void OnRayCastHit()
     {
         Instantiate(hitMarker, hit.point, Quaternion.identity);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, sphereCastSize);
     }
 }
