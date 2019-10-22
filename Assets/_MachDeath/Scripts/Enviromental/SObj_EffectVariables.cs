@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu]
+[CreateAssetMenu(menuName = "Enviromental/EnviromentalSO")]
 public class SObj_EffectVariables : ScriptableObject
 {
     public string name;

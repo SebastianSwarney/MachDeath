@@ -72,7 +72,7 @@ public class Health : MonoBehaviour
     {
         if (!m_isDead)
         {
-            if (m_currentHealth > m_maxHealth)
+            if (m_currentHealth < m_maxHealth)
             {
                 m_currentHealth += p_appliedHealth;
                 if (m_currentHealth > m_maxHealth)
