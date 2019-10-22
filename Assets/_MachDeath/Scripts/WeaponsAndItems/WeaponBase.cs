@@ -23,6 +23,7 @@ public class WeaponBase : ItemBase
     [SerializeField]
     private AnimationCurve animationCurve;
 
+    [SerializeField]
     private float LerpTimer;
 
     private Quaternion defaultSpearOrientation;
@@ -74,19 +75,28 @@ public class WeaponBase : ItemBase
         if (Physics.SphereCast(rayOrigin, sphereCastSize, fpsCam.transform.forward, out hit, Mathf.Infinity, targetLayerMask))
         {
             Debug.Log("I hit " + hit.collider.name);
-            this.transform.LookAt(Vector3.Lerp(this.transform.position, (CalculateShotNoMarker()), animationCurve.Evaluate((LerpTimer * LerpSpeed))));
+
+            var FromDir = (transform.position + this.transform.forward);
+
+            this.transform.LookAt(Vector3.Lerp(FromDir, CalculateShotNoMarker(), animationCurve.Evaluate((LerpTimer * LerpSpeed))));
+
             Debug.DrawLine(transform.position, hit.point, Color.cyan);
+
             Recticle.color = Color.cyan;
-            LerpTimer = 0;
+
             return;
         }
         else
         {
-            LerpTimer += Time.deltaTime;
             Recticle.color = Color.red;
-            this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, defaultSpearOrientation, LerpTimer * LerpSpeed);
-            LerpTimer = 0;
+            LerpTimer -= Time.deltaTime;
+            //this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, defaultSpearOrientation, LerpTimer * LerpSpeed);
         }
+        //LerpTimer += Time.deltaTime;
+        //LerpTimer -= Time.deltaTime;
+        this.transform.localRotation = Quaternion.Lerp(this.transform.localRotation, defaultSpearOrientation, animationCurve.Evaluate((1 - LerpTimer) * LerpSpeed));
+        LerpTimer = Mathf.Clamp(LerpTimer, 0, 1);
+
     }
 
     private Vector3 CalculateShot()
