@@ -196,7 +196,7 @@ public class PlayerMovementController : MonoBehaviour
         CalculateJump();
     }
 
-    private void Update()
+    public void PerformController()
     {
         InputBuffering();
 
