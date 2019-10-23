@@ -515,7 +515,6 @@ public class PlayerMovementController : MonoBehaviour
 
         if (IsGrounded())
         {
-            m_leapCount = 0;
             JumpMaxVelocity();
             return;
         }
@@ -629,6 +628,7 @@ public class PlayerMovementController : MonoBehaviour
             yield return null;
         }
 
+        m_leapCount = 0;
         m_currentLeapSpeed = 0;
         m_isLeaping = false;
     }
