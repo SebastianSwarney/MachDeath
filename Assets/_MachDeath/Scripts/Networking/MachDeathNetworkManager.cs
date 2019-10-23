@@ -30,7 +30,6 @@ namespace Mirror.MachDeath
 
         void OnCreateCharacter(NetworkConnection conn, CreateCharacterMessage message)
         {
-            print("Player Spawned");
             GameObject newPlayer = Instantiate(playerPrefab);
 
             newPlayer.transform.position = m_spawnManager.NewSpawnPointFFA().position;

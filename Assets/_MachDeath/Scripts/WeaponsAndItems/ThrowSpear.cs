@@ -15,7 +15,6 @@ namespace Mirror.MachDeath
         private void Start()
         {
             m_playerProperties = GetComponent<PlayerProperties>();
-            print("Make Spear");
         }
         [Command]
         public void CmdCreateSpear()
@@ -26,7 +25,6 @@ namespace Mirror.MachDeath
             newSpear.transform.rotation = m_fireSpot.rotation;
             
             newSpear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
-            print("Make Spear");
             NetworkServer.Spawn(newSpear);
 
             RpcAssignVelocity(newSpear);
