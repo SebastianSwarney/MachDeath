@@ -28,11 +28,16 @@ public class WeaponBase : ItemBase
 
     private Quaternion defaultSpearOrientation;
 
+
+    //Networking THings
+    private PlayerProperties m_playerProperties;
+
     // Start is called before the first frame update
     void Start()
     {
         GetItemType();
         GetItemData();
+        m_playerProperties = GetComponentInParent<PlayerProperties>();
     }
     protected override void GetItemType()
     {
@@ -64,6 +69,7 @@ public class WeaponBase : ItemBase
         //this.transform.LookAt((CalculateShot().point) + new Vector3(0,-90,0));
 
         GameObject spear = Instantiate(spearPrefab);
+        spear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
         spear.transform.position = this.transform.position;
         spear.transform.rotation = this.transform.rotation;
         spear.GetComponent<Rigidbody>().velocity = (spear.transform.forward) * 100f;
