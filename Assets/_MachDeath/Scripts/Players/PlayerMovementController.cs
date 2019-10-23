@@ -645,6 +645,11 @@ public class PlayerMovementController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    public void ResetCamera()
+    {
+        m_cameraMain.rotation = Quaternion.identity;
+        m_cameraTilt.rotation = Quaternion.identity;
+    }
 
     private void CameraRotation()
     {
