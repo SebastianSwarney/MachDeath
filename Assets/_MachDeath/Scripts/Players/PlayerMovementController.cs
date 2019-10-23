@@ -168,17 +168,13 @@ public class PlayerMovementController : MonoBehaviour
     public float shit;
     private bool m_isStunned;
 
-
-
     private Coroutine m_wallJumpBufferCoroutine;
     private Coroutine m_jumpBufferCoroutine;
     private Coroutine m_graceBufferCoroutine;
     private Coroutine m_leapBufferCoroutine;
     private Coroutine m_wallRunBufferCoroutine;
 
-
-
-
+    private float m_currentSpeedBoost;
 
     private void Start()
     {
@@ -754,8 +750,14 @@ public class PlayerMovementController : MonoBehaviour
         speed += m_currentWallRunningSpeed;
         speed += m_currentSlideSpeed;
         speed += m_currentWallClimbSpeed;
+        speed += m_currentSpeedBoost;
 
         m_currentMovementSpeed = speed;
+    }
+
+    public void SpeedBoost(float p_boostAmount)
+    {
+        m_currentSpeedBoost = p_boostAmount;
     }
 
     private void CalculateGroundPhysics()
