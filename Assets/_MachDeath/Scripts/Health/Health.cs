@@ -15,8 +15,10 @@ namespace Mirror.MachDeath
     {
         #region Generic Health Values
         public float m_maxHealth;
+
+        [SyncVar]
         public float m_currentHealth;
-        [HideInInspector]
+        [HideInInspector][SyncVar]
         public bool m_isDead;
         public HealthEvent m_onDied = new HealthEvent();
         public HealthAttackedEvent m_onKilled = new HealthAttackedEvent();
@@ -53,23 +55,29 @@ namespace Mirror.MachDeath
         {
             m_shieldRegenDelayTimer = new WaitForSeconds(m_shieldRegenDelay);
             m_healthRegenDelayTimer = new WaitForSeconds(m_healthRegnerationDelay);
-            CmdRespawn();
+            Respawn();
         }
 
-        [Command]
-        public void CmdRespawn()
+        
+        public void Respawn()
         {
             StopAllCoroutines();
             m_isDead = false;
             m_currentHealth = m_maxHealth;
             if (m_useShields) m_currentShieldStrength = m_maxShieldStrength;
         }
-        [Command]
-        public void CmdTakeDamage(float p_appliedDamage)
+        
+
+        public void TakeDamage(float p_appliedDamage)
         {
+            
             if (!m_isDead)
             {
-                DealDamage(p_appliedDamage);
+                if (isLocalPlayer)
+                {
+                    DealDamage(p_appliedDamage);
+                }
+                
                 if (m_isDead)
                 {
                     m_onDied.Invoke();
@@ -78,12 +86,15 @@ namespace Mirror.MachDeath
 
         }
 
-        [Command]
-        public void CmdTakeDamageSpear(float p_appliedDamage, PlayerProperties p_spearOwner)
+        
+        public void TakeDamageSpear(float p_appliedDamage, PlayerProperties p_spearOwner)
         {
+            
             if (!m_isDead)
             {
-                DealDamage(p_appliedDamage);
+                if (isLocalPlayer) {
+                    DealDamage(p_appliedDamage);
+                }
                 if (m_isDead)
                 {
                     m_onKilled.Invoke(p_spearOwner);
@@ -91,9 +102,11 @@ namespace Mirror.MachDeath
             }
         }
 
-        [Command]
-        public void CmdHealHealth(float p_appliedHealth)
+        
+        public void HealHealth(float p_appliedHealth)
         {
+            if (!isLocalPlayer) return;
+
             if (!m_isDead)
             {
                 if (m_currentHealth < m_maxHealth)

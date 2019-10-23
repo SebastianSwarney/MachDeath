@@ -61,7 +61,7 @@ namespace Mirror.MachDeath
                 {
                     //TODO: get the playcontroller scripts health value and add to it if it is below 100%.
                     Debug.Log("HEALING");
-                    m_Player.GetComponent<Health>().CmdHealHealth(m_effectVarSO.m_HealthPickUpAmount);
+                    m_Player.GetComponent<Health>().HealHealth(m_effectVarSO.m_HealthPickUpAmount);
                     //m_playerHealth += m_effectVarSO.m_HealthPickUpAmount; 
 
                 }
