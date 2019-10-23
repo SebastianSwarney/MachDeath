@@ -24,31 +24,39 @@ namespace Mirror.MachDeath
             m_spawnManager = MachDeathSpawningManager.Instance;
             m_playerProperties = GetComponent<PlayerProperties>();
         }
-        public void OnDied()
+
+        [Command]
+        public void CmdOnDied()
         {
             if (m_diedCoroutine == null)
             {
-                m_visualState.SetActive(false);
+                RpcDisablePlayer(null);
                 m_diedCoroutine = StartCoroutine(DiedCoroutine());
-                m_input.enabled = false;
-                m_movementCont.enabled = false;
-                m_currentGameType.PlayerDied(m_playerProperties, null);
             }
 
         }
 
-        public void OnKilled(PlayerProperties p_killer)
+        [ClientRpc]
+        private void RpcDisablePlayer(PlayerProperties p_killer)
+        {
+            m_visualState.SetActive(false);
+
+            m_input.enabled = false;
+            m_movementCont.enabled = false;
+            if (m_currentGameType != null)
+            {
+                m_currentGameType.PlayerDied(m_playerProperties, p_killer);
+            }
+            m_diedCoroutine = StartCoroutine(DiedCoroutine());
+
+        }
+
+        [Command]
+        public void CmdOnKilled(PlayerProperties p_killer)
         {
             if (m_diedCoroutine == null)
             {
-                if(m_currentGameType != null)
-                {
-                    m_currentGameType.PlayerDied(m_playerProperties, p_killer);
-                } 
-                m_visualState.SetActive(false);
-                m_diedCoroutine = StartCoroutine(DiedCoroutine());
-                m_input.enabled = false;
-                m_movementCont.enabled = false;
+                RpcDisablePlayer(p_killer);
             }
 
         }
@@ -63,14 +71,26 @@ namespace Mirror.MachDeath
 
 
             Transform newSpawn = m_spawnManager.NewSpawnPointFFA();
-            transform.position = newSpawn.position;
-            transform.eulerAngles = new Vector3(0f, newSpawn.transform.eulerAngles.y, 0f);
-            m_healthEvent.Invoke();
-            m_visualState.SetActive(true);
+            
             m_diedCoroutine = null;
-
+            RpcSpawnPlayer(newSpawn);
 
             yield return new WaitForFixedUpdate();
+            RpcEnableInput();
+        }
+
+        [ClientRpc]
+        private void RpcSpawnPlayer(Transform p_spawnPoint)
+        {
+            transform.position = p_spawnPoint.position;
+            transform.eulerAngles = new Vector3(0f, p_spawnPoint.transform.eulerAngles.y, 0f);
+            m_healthEvent.Invoke();
+            m_visualState.SetActive(true);
+        }
+
+        [ClientRpc]
+        private void RpcEnableInput()
+        {
             m_input.enabled = true;
             m_movementCont.enabled = true;
         }

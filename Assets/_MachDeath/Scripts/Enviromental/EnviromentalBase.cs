@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
-
-abstract public class EnviromentalBase : MonoBehaviour
+namespace Mirror.MachDeath
 {
-    abstract public void OnTriggerEnter(Collider other);
+    abstract public class EnviromentalBase : MonoBehaviour
+    {
+        abstract public void OnTriggerEnter(Collider other);
+    }
 }

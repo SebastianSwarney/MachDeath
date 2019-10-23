@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KillBoundary : MonoBehaviour
-{
-    
-    private void OnTriggerEnter(Collider collision)
+namespace Mirror.MachDeath{
+    public class KillBoundary : NetworkBehaviour
     {
-        Health health = collision.gameObject.GetComponent<Health>();
-        if (health != null)
+
+        private void OnTriggerEnter(Collider collision)
         {
-            print("Take Damage");
-            health.TakeDamage(100000000000f);
+            Health health = collision.gameObject.GetComponent<Health>();
+            if (health != null)
+            {
+                
+                health.CmdTakeDamage(100000000000f);
+            }
         }
+
+
     }
-
-
 }

@@ -250,6 +250,36 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4140565599275655250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8927791247493553924}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8927791247493553924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4140565599275655250}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.79}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4419650569349292682}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4419650568479112031
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,6 +331,7 @@ GameObject:
   - component: {fileID: 8571380159414952080}
   - component: {fileID: 865858181429369223}
   - component: {fileID: -2667287903190575809}
+  - component: {fileID: 5395916833519098359}
   m_Layer: 0
   m_Name: Prfb_Player
   m_TagString: Untagged
@@ -340,7 +371,7 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 1972800215
+  m_SceneId: 3013450673
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -653,6 +684,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66e0c5017e23dfb4cbcacefc7576ce5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   m_maxHealth: 100
   m_currentHealth: 0
   m_isDead: 0
@@ -660,7 +693,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 865858181429369223}
-        m_MethodName: OnDied
+        m_MethodName: CmdOnDied
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -673,7 +706,18 @@ MonoBehaviour:
     m_TypeName: HealthEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   m_onKilled:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 865858181429369223}
+        m_MethodName: CmdOnKilled
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: HealthAttackedEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   m_useShields: 0
@@ -732,6 +776,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_myTeam: 0
   m_playerName: 
+--- !u!114 &5395916833519098359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4419650568852719188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 874534c04e6e2654d9e3f5fee95084c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  m_fireSpot: {fileID: 8927791247493553924}
+  m_playerProps: {fileID: -2667287903190575809}
+  m_fireKeycode: 273
 --- !u!1 &4419650568909376681
 GameObject:
   m_ObjectHideFlags: 0
@@ -884,7 +945,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 8927791247493553924}
   m_Father: {fileID: 1241036337627567655}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

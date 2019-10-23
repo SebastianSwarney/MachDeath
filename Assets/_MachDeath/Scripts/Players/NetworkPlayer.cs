@@ -38,7 +38,7 @@ namespace Mirror.MachDeath{
             }
             m_input.GetInput();
             m_movementController.PerformController();
-            print("Can Control");
+
         }
     }
 }

@@ -8,194 +8,189 @@ public class HealthEvent : UnityEngine.Events.UnityEvent { }
 
 [System.Serializable]
 public class HealthAttackedEvent: UnityEngine.Events.UnityEvent<PlayerProperties> { }
-public class Health : MonoBehaviour
+
+namespace Mirror.MachDeath
 {
-    #region Generic Health Values
-    public float m_maxHealth;
-    public float m_currentHealth;
-    [HideInInspector]
-    public bool m_isDead;
-    public HealthEvent m_onDied = new HealthEvent();
-    public HealthAttackedEvent m_onKilled = new HealthAttackedEvent();
-    
-    #endregion
-
-    #region Shield Values
-    [Header("Shields")]
-    public bool m_useShields = false;
-    public float m_shieldDamageMultiplier = .75f;
-    public float m_maxShieldStrength;
-    [HideInInspector]
-    public float m_currentShieldStrength;
-    public bool m_shieldRegeneration = true;
-    public float m_shieldRegenDelay;
-    public float m_shieldRegenTimeToFull;
-    private float m_shieldRegenCurrentTime;
-    private Coroutine m_shieldRegenerationCoroutine;
-    private WaitForSeconds m_shieldRegenDelayTimer;
-    #endregion
-
-    #region Health Regeneration Values
-    [Header("Health Regeneration")]
-    public bool m_useHealthRegeneration = false;
-    public float m_maxHealthRegenerationAmount;
-    public float m_healthRegnerationDelay;
-    public float m_healthRegenTimeToFull;
-    private float m_healthRegenCurrentTime;
-    private Coroutine m_healthRegenCorotine;
-    private WaitForSeconds m_healthRegenDelayTimer;
-    #endregion
-
-    private void Start()
+    public class Health : NetworkBehaviour
     {
-        m_shieldRegenDelayTimer = new WaitForSeconds(m_shieldRegenDelay);
-        m_healthRegenDelayTimer = new WaitForSeconds(m_healthRegnerationDelay);
-        Respawn();
-    }
+        #region Generic Health Values
+        public float m_maxHealth;
+        public float m_currentHealth;
+        [HideInInspector]
+        public bool m_isDead;
+        public HealthEvent m_onDied = new HealthEvent();
+        public HealthAttackedEvent m_onKilled = new HealthAttackedEvent();
 
-    public void Respawn()
-    {
-        StopAllCoroutines();
-        m_isDead = false;
-        m_currentHealth = m_maxHealth;
-        if (m_useShields) m_currentShieldStrength = m_maxShieldStrength;
-    }
+        #endregion
 
-    public void TakeDamage(float p_appliedDamage)
-    {
-        if (!m_isDead)
+        #region Shield Values
+        [Header("Shields")]
+        public bool m_useShields = false;
+        public float m_shieldDamageMultiplier = .75f;
+        public float m_maxShieldStrength;
+        [HideInInspector]
+        public float m_currentShieldStrength;
+        public bool m_shieldRegeneration = true;
+        public float m_shieldRegenDelay;
+        public float m_shieldRegenTimeToFull;
+        private float m_shieldRegenCurrentTime;
+        private Coroutine m_shieldRegenerationCoroutine;
+        private WaitForSeconds m_shieldRegenDelayTimer;
+        #endregion
+
+        #region Health Regeneration Values
+        [Header("Health Regeneration")]
+        public bool m_useHealthRegeneration = false;
+        public float m_maxHealthRegenerationAmount;
+        public float m_healthRegnerationDelay;
+        public float m_healthRegenTimeToFull;
+        private float m_healthRegenCurrentTime;
+        private Coroutine m_healthRegenCorotine;
+        private WaitForSeconds m_healthRegenDelayTimer;
+        #endregion
+
+        private void Start()
         {
-            DealDamage(p_appliedDamage);
-            if (m_isDead)
-            {
-                m_onDied.Invoke();
-            }
+            m_shieldRegenDelayTimer = new WaitForSeconds(m_shieldRegenDelay);
+            m_healthRegenDelayTimer = new WaitForSeconds(m_healthRegnerationDelay);
+            CmdRespawn();
         }
 
-    }
-
-    public void TakeDamageSpear(float p_appliedDamage, PlayerProperties p_spearOwner)
-    {
-        if (!m_isDead)
-        {
-            DealDamage(p_appliedDamage);
-            if (m_isDead)
-            {
-                m_onKilled.Invoke(p_spearOwner);
-            }
-        }
-    }
-
-    public void HealHealth(float p_appliedHealth)
-    {
-        if (!m_isDead)
-        {
-            if (m_currentHealth < m_maxHealth)
-            {
-                m_currentHealth += p_appliedHealth;
-                if (m_currentHealth > m_maxHealth)
-                {
-                    m_currentHealth = m_maxHealth;
-                }
-            }
-            
-
-        }
-    }
-
-    public void TakeDamageExplosion(float p_appliedDamage, Vector3 p_explosionPosition, float p_explosionForce, float p_explosionRadius)
-    {
-        if (!m_isDead)
-        {
-            DealDamage(p_appliedDamage);
-            if (m_isDead)
-            {
-                m_onDied.Invoke();
-            }
-        }
-    }
-
-    private void DealDamage(float p_appliedDamage)
-    {
-        if (!m_isDead)
+        [Command]
+        public void CmdRespawn()
         {
             StopAllCoroutines();
-
-            if (m_useShields && m_currentShieldStrength > 0)
+            m_isDead = false;
+            m_currentHealth = m_maxHealth;
+            if (m_useShields) m_currentShieldStrength = m_maxShieldStrength;
+        }
+        [Command]
+        public void CmdTakeDamage(float p_appliedDamage)
+        {
+            if (!m_isDead)
             {
-                m_currentShieldStrength -= p_appliedDamage * m_shieldDamageMultiplier;
-                if (m_currentShieldStrength < 0)
+                DealDamage(p_appliedDamage);
+                if (m_isDead)
                 {
-                    m_currentHealth -= (Mathf.Abs(m_currentShieldStrength * ((1f - m_shieldDamageMultiplier) + 1f)));
-                    if (m_currentHealth <= 0)
+                    m_onDied.Invoke();
+                }
+            }
+
+        }
+
+        [Command]
+        public void CmdTakeDamageSpear(float p_appliedDamage, PlayerProperties p_spearOwner)
+        {
+            if (!m_isDead)
+            {
+                DealDamage(p_appliedDamage);
+                if (m_isDead)
+                {
+                    m_onKilled.Invoke(p_spearOwner);
+                }
+            }
+        }
+
+        [Command]
+        public void CmdHealHealth(float p_appliedHealth)
+        {
+            if (!m_isDead)
+            {
+                if (m_currentHealth < m_maxHealth)
+                {
+                    m_currentHealth += p_appliedHealth;
+                    if (m_currentHealth > m_maxHealth)
+                    {
+                        m_currentHealth = m_maxHealth;
+                    }
+                }
+
+
+            }
+        }
+
+        private void DealDamage(float p_appliedDamage)
+        {
+            if (!m_isDead)
+            {
+                StopAllCoroutines();
+
+                if (m_useShields && m_currentShieldStrength > 0)
+                {
+                    m_currentShieldStrength -= p_appliedDamage * m_shieldDamageMultiplier;
+                    if (m_currentShieldStrength < 0)
+                    {
+                        m_currentHealth -= (Mathf.Abs(m_currentShieldStrength * ((1f - m_shieldDamageMultiplier) + 1f)));
+                        if (m_currentHealth <= 0)
+                        {
+                            m_isDead = true;
+
+                        }
+                        m_currentShieldStrength = 0;
+                    }
+                    if (!m_isDead)
+                    {
+                        m_shieldRegenerationCoroutine = StartCoroutine(RegenShield());
+                    }
+                }
+
+                else
+                {
+                    m_currentHealth -= p_appliedDamage;
+                    if (m_currentHealth > 0)
+                    {
+                        if (m_useShields)
+                        {
+                            m_shieldRegenerationCoroutine = StartCoroutine(RegenShield());
+                        }
+                        else if (m_useHealthRegeneration && m_currentHealth < m_maxHealthRegenerationAmount)
+                        {
+                            m_healthRegenCorotine = StartCoroutine(RegenHealth());
+                        }
+                    }
+                    else
                     {
                         m_isDead = true;
 
                     }
-                    m_currentShieldStrength = 0;
                 }
-                if (!m_isDead)
-                {
-                    m_shieldRegenerationCoroutine = StartCoroutine(RegenShield());
-                }
-            }
 
-            else
+            }
+        }
+
+        IEnumerator RegenShield()
+        {
+            yield return m_shieldRegenDelayTimer;
+            float regenRate = ((m_maxShieldStrength / m_shieldRegenTimeToFull)) / 60f;
+
+            while (m_currentShieldStrength < m_maxShieldStrength)
             {
-                m_currentHealth -= p_appliedDamage;
-                if (m_currentHealth > 0)
-                {
-                    if (m_useShields)
-                    {
-                        m_shieldRegenerationCoroutine = StartCoroutine(RegenShield());
-                    }
-                    else if (m_useHealthRegeneration && m_currentHealth < m_maxHealthRegenerationAmount)
-                    {
-                        m_healthRegenCorotine = StartCoroutine(RegenHealth());
-                    }
-                }
-                else
-                {
-                    m_isDead = true;
-
-                }
+                m_currentShieldStrength += regenRate;
+                yield return null;
             }
 
+            m_currentShieldStrength = m_maxShieldStrength;
+            if (m_useHealthRegeneration && m_currentHealth < m_maxHealthRegenerationAmount)
+            {
+                m_healthRegenCorotine = StartCoroutine(RegenHealth());
+            }
+            m_shieldRegenerationCoroutine = null;
         }
-    }
 
-    IEnumerator RegenShield()
-    {
-        yield return m_shieldRegenDelayTimer;
-        float regenRate = ((m_maxShieldStrength / m_shieldRegenTimeToFull)) / 60f;
-
-        while (m_currentShieldStrength < m_maxShieldStrength)
+        IEnumerator RegenHealth()
         {
-            m_currentShieldStrength += regenRate;
-            yield return null;
+            yield return m_healthRegenDelayTimer;
+
+            float regenRate = ((m_maxHealth / m_healthRegenTimeToFull) / 60f);
+
+            while (m_currentHealth < m_maxHealthRegenerationAmount)
+            {
+                m_currentHealth += regenRate;
+                yield return null;
+            }
+            m_currentHealth = m_maxHealthRegenerationAmount;
+            m_healthRegenCorotine = null;
+
         }
-
-        m_currentShieldStrength = m_maxShieldStrength;
-        if (m_useHealthRegeneration && m_currentHealth < m_maxHealthRegenerationAmount)
-        {
-            m_healthRegenCorotine = StartCoroutine(RegenHealth());
-        }
-        m_shieldRegenerationCoroutine = null;
-    }
-
-    IEnumerator RegenHealth()
-    {
-        yield return m_healthRegenDelayTimer;
-
-        float regenRate = ((m_maxHealth / m_healthRegenTimeToFull) / 60f);
-
-        while (m_currentHealth < m_maxHealthRegenerationAmount)
-        {
-            m_currentHealth += regenRate;
-            yield return null;
-        }
-        m_currentHealth = m_maxHealthRegenerationAmount;
-        m_healthRegenCorotine = null;
-
     }
 }
