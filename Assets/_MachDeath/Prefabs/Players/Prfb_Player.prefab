@@ -1217,6 +1217,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}
+      propertyPath: animationCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
       propertyPath: Recticle
       value: 
       objectReference: {fileID: 1690714236401872489}
@@ -1260,6 +1265,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_throwSpear.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: animationCurve.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: animationCurve.m_Curve.Array.data[0].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: animationCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: animationCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: LerpSpeed
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 8204194977814237145, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}

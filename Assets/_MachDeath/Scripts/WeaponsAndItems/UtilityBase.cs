@@ -31,7 +31,7 @@ public class UtilityBase : ItemBase
     {
         //Get reference to fps Camera and WeaponController//Should be item controller
         base.GetData();
-        defefaultShield = this.transform.position;
+        defefaultShield = this.transform.localPosition;
         LerpTimer = 0;
     }
 
@@ -48,7 +48,7 @@ public class UtilityBase : ItemBase
     void Update()
     {
         LerpTimer += Time.deltaTime;
-        Vector3 offset = new Vector3(0, 0, 0);
-        this.transform.position = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
+        Vector3 offset = new Vector3(0.2f, 0, 0);
+        this.transform.localPosition = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
     }
 }
