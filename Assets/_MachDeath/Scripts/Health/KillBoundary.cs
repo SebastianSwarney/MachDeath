@@ -11,10 +11,9 @@ namespace Mirror.MachDeath{
             Health health = collision.gameObject.GetComponent<Health>();
             if (health != null)
             {
-                if (health.isLocalPlayer)
-                {
+
                     health.TakeDamage(100000000000f);
-                }
+                
                 
             }
         }

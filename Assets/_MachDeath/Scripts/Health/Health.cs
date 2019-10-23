@@ -66,17 +66,16 @@ namespace Mirror.MachDeath
             m_currentHealth = m_maxHealth;
             if (m_useShields) m_currentShieldStrength = m_maxShieldStrength;
         }
-        
 
+        
         public void TakeDamage(float p_appliedDamage)
         {
             
             if (!m_isDead)
             {
-                if (isLocalPlayer)
-                {
-                    DealDamage(p_appliedDamage);
-                }
+
+                DealDamage(p_appliedDamage);
+                
                 
                 if (m_isDead)
                 {
@@ -92,9 +91,9 @@ namespace Mirror.MachDeath
             
             if (!m_isDead)
             {
-                if (isLocalPlayer) {
+
                     DealDamage(p_appliedDamage);
-                }
+
                 if (m_isDead)
                 {
                     m_onKilled.Invoke(p_spearOwner);
@@ -105,13 +104,12 @@ namespace Mirror.MachDeath
         
         public void HealHealth(float p_appliedHealth)
         {
-            if (!isLocalPlayer) return;
 
             if (!m_isDead)
             {
                 if (m_currentHealth < m_maxHealth)
                 {
-                    m_currentHealth += p_appliedHealth;
+                    ChangeHealth(p_appliedHealth);
                     if (m_currentHealth > m_maxHealth)
                     {
                         m_currentHealth = m_maxHealth;
@@ -149,7 +147,7 @@ namespace Mirror.MachDeath
 
                 else
                 {
-                    m_currentHealth -= p_appliedDamage;
+                    ChangeHealth(-p_appliedDamage);
                     if (m_currentHealth > 0)
                     {
                         if (m_useShields)
@@ -169,6 +167,12 @@ namespace Mirror.MachDeath
                 }
 
             }
+        }
+
+        [Server]
+        private void ChangeHealth(float p_appliedDamage)
+        {
+            m_currentHealth += p_appliedDamage;
         }
 
         IEnumerator RegenShield()

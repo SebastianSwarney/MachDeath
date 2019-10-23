@@ -78,8 +78,9 @@ namespace Mirror.MachDeath
                 Transform newSpawn = m_spawnManager.NewSpawnPointFFA();
                 transform.position = newSpawn.position;
                 transform.eulerAngles = new Vector3(0f, newSpawn.transform.eulerAngles.y, 0f);
-                m_healthEvent.Invoke();
+                
             }
+            m_healthEvent.Invoke();
             m_visualState.SetActive(true);
 
             yield return new WaitForFixedUpdate();
