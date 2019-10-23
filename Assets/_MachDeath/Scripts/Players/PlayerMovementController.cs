@@ -203,6 +203,7 @@ public class PlayerMovementController : MonoBehaviour
 
     public void PerformController()
     {
+        
         InputBuffering();
 
         CalculateCurrentSpeed();

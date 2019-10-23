@@ -338,9 +338,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
+  localPlayerAuthority: 1
   m_AssetId: 
-  m_SceneId: 1596915763
+  m_SceneId: 1972800215
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,6 +355,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  m_camera: {fileID: 4849307283354755996}
+  m_pauseKey: 108
 --- !u!114 &-6262562220349146561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -669,6 +671,11 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: HealthEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_onKilled:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: HealthAttackedEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   m_useShields: 0
   m_shieldDamageMultiplier: 0.75
   m_maxShieldStrength: 0
