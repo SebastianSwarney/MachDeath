@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+[System.Serializable]
+public class SpearEvent : UnityEngine.Events.UnityEvent { }
+
 public class WeaponBase : ItemBase
 {
     [SerializeField]
@@ -28,11 +32,16 @@ public class WeaponBase : ItemBase
 
     private Quaternion defaultSpearOrientation;
 
+
+    //Networking THings
+    public SpearEvent m_throwSpear;
+
     // Start is called before the first frame update
     void Start()
     {
         GetItemType();
         GetItemData();
+        
     }
     protected override void GetItemType()
     {
@@ -63,10 +72,7 @@ public class WeaponBase : ItemBase
         //CalculateShot();
         //this.transform.LookAt((CalculateShot().point) + new Vector3(0,-90,0));
 
-        GameObject spear = Instantiate(spearPrefab);
-        spear.transform.position = this.transform.position;
-        spear.transform.rotation = this.transform.rotation;
-        spear.GetComponent<Rigidbody>().velocity = (spear.transform.forward) * 100f;
+        m_throwSpear.Invoke();
         this.transform.LookAt((CalculateShot()));
     }
 

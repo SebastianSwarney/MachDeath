@@ -184,8 +184,18 @@ MonoBehaviour:
     m_Bits: 2147483648
   sphereCastSize: 0.2
   Recticle: {fileID: 0}
-  LerpTimer: 0
   LerpSpeed: 0
+  animationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  LerpTimer: 0
+  m_throwSpear:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: SpearEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!1 &6974619383899628914
 GameObject:
   m_ObjectHideFlags: 0

@@ -36,7 +36,6 @@ public class MachDeathSpawningManager : MonoBehaviour
         {
             if (!m_rand.PlayerCloseToSpawn())
             {
-                print(m_rand.gameObject.name);
                 return m_rand.transform;
             }
             
