@@ -50,20 +50,20 @@ namespace Mirror.MachDeath
         {
             if (other.tag == "Player")
             {
+               
                 if (m_effectVarSO.name == "BoostPad")
                 {
                     Debug.Log("SHOULD BE BOOSTING");
-                    m_Player.GetComponent<Rigidbody>().AddForce(m_Player.transform.forward * m_effectVarSO.m_Force, ForceMode.Impulse);
+                  
+                    other.transform.GetComponent<PlayerMovementController>().SpeedBoost(m_effectVarSO.m_Force);
                     m_onSpeedBoost.Invoke();
                 }
 
                 if (m_effectVarSO.name == "HealthPickup")
                 {
-                    //TODO: get the playcontroller scripts health value and add to it if it is below 100%.
                     Debug.Log("HEALING");
-                    m_Player.GetComponent<Health>().HealHealth(m_effectVarSO.m_HealthPickUpAmount);
-                    //m_playerHealth += m_effectVarSO.m_HealthPickUpAmount; 
-
+                    other.transform.GetComponent<Health>().HealHealth(m_effectVarSO.m_HealthPickUpAmount);
+                   
                 }
 
 
