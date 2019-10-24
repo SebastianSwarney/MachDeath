@@ -10,6 +10,8 @@ public class PlayerInput : MonoBehaviour
     private PlayerMovementController m_playerMovementController;
     private Player m_playerInputController;
 
+    private bool m_doTheLookyLook;
+
     private void Start()
     {
         m_playerMovementController = GetComponent<PlayerMovementController>();
@@ -21,8 +23,18 @@ public class PlayerInput : MonoBehaviour
         Vector2 movementInput = new Vector2(m_playerInputController.GetAxis("MoveHorizontal"), m_playerInputController.GetAxis("MoveVertical"));
         m_playerMovementController.SetMovementInput(movementInput);
 
-        Vector2 lookInput = new Vector2(m_playerInputController.GetAxis("LookHorizontal"), m_playerInputController.GetAxis("LookVertical"));
-        m_playerMovementController.SetLookInput(lookInput);
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            m_doTheLookyLook = !m_doTheLookyLook;
+        }
+
+        if (!m_doTheLookyLook)
+        {
+            Vector2 lookInput = new Vector2(m_playerInputController.GetAxis("LookHorizontal"), m_playerInputController.GetAxis("LookVertical"));
+            m_playerMovementController.SetLookInput(lookInput);
+        }
+
+
 
         if (m_playerInputController.GetButtonDown("Jump"))
         {

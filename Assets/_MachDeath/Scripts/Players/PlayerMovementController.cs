@@ -192,9 +192,7 @@ public class PlayerMovementController : MonoBehaviour
     private Vector2 m_movementInput;
     private Vector2 m_lookInput;
 
-    public Vector3 m_impact;
-    public Rigidbody m_rb;
-    public float shit;
+    private Rigidbody m_rigidbody;
     private bool m_isStunned;
 
     private Coroutine m_wallJumpBufferCoroutine;
@@ -208,6 +206,7 @@ public class PlayerMovementController : MonoBehaviour
     private void Start()
     {
         m_characterController = GetComponent<CharacterController>();
+        m_rigidbody = GetComponent<Rigidbody>();
 
         CalculateJump();
         LockCursor();
@@ -897,6 +896,31 @@ public class PlayerMovementController : MonoBehaviour
 
     #endregion
 
+    private void TriggerKnockBack(Vector3 p_forceDirection, float p_force)
+    {
+        m_velocity = p_forceDirection * p_force;
+    }
+
+    private IEnumerator KnockBack(Vector3 p_forceDirection, float p_force)
+    {
+        m_isStunned = true;
+
+        m_characterController.enabled = false;
+        m_rigidbody.isKinematic = false;
+
+        m_rigidbody.AddForce(p_forceDirection * p_force, ForceMode.Impulse);
+
+        while (m_isStunned)
+        {
+            yield return null;
+        }
+
+        m_rigidbody.isKinematic = true;
+        m_characterController.enabled = true;
+
+        //ResetCamera();
+    }
+
     private void FillSpeedBar()
     {
         float progress = m_speedBarCurve.Evaluate(m_velocity.magnitude / m_maxMovementSpeed);
@@ -905,25 +929,6 @@ public class PlayerMovementController : MonoBehaviour
         float progress2 = m_boostCurve.Evaluate(m_currentMovementSpeed / m_maxSpeedBoost);
         m_boostSpeedometer.fillAmount = progress2;
     }
-
-    private IEnumerator KnockBack()
-    {
-        m_isStunned = true;
-
-        m_characterController.enabled = false;
-        m_rb.isKinematic = false;
-
-        m_rb.AddForce(-m_camera.transform.forward * shit, ForceMode.Impulse);
-
-        while (m_isStunned)
-        {
-            yield return null;
-        }
-
-        m_rb.isKinematic = true;
-        m_characterController.enabled = true;
-    }
-
 
 
     private void OnCollisionEnter(Collision collision)
