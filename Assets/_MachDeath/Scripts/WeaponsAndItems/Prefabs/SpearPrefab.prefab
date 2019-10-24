@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -5232417424256962467}
   - component: {fileID: -8031380682068371866}
   - component: {fileID: 3648824628411775770}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpearPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 3898591385045717469}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   m_Radius: 0.24
   m_Height: 0.86
   m_Direction: 2
@@ -158,8 +158,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
-  m_SceneId: 660690391
+  m_AssetId: 07bfdc5a2cfa4184d96a9bff0772f30d
+  m_SceneId: 0
 --- !u!114 &-8031380682068371866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,9 +189,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collisionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 256
   speed: 0
-  reflections: 2
+  reflections: 5
   maxReflectionDistance: 300
 --- !u!136 &1935287189554179808
 CapsuleCollider:
@@ -218,6 +218,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SpearModel
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: f86e17d36cdbc1f46947e81eafaf8089,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: f86e17d36cdbc1f46947e81eafaf8089,
         type: 3}

@@ -9,6 +9,10 @@ public class SpearRicochet : MonoBehaviour
 
     public float speed, reflections, maxReflectionDistance;
 
+    //[SerializeField]
+    //private LayerMask layermask;
+
+    private Collider spearCollider;
 
     private Rigidbody m_rb;
 
@@ -19,6 +23,7 @@ public class SpearRicochet : MonoBehaviour
     void Start()
     {
         m_rb = GetComponent<Rigidbody>();
+        spearCollider = GetComponent<Collider>();
         isRayHit = false;
     }
 
@@ -42,12 +47,20 @@ public class SpearRicochet : MonoBehaviour
 
     private void DetectHit()
     {
-        Ray ray = new Ray(this.transform.position, this.transform.forward * 3f);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, 2.0f))
+        if (reflections > 0)
         {
-            RayHitNew(this.transform.position + this.transform.forward * 0.75f, this.transform.forward, (int)reflections);
+            Ray ray = new Ray(this.transform.position, this.transform.forward * 3f);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 2.0f))
+            {
+                RayHitNew(this.transform.position + this.transform.forward * 0.75f, this.transform.forward, (int)reflections);
+            }
+        }
+        else
+        {
+            spearCollider.enabled = true;
+            //m_rb.velocity = Vector3.zero;
         }
     }
 
@@ -55,8 +68,9 @@ public class SpearRicochet : MonoBehaviour
     {
 
         Debug.Log("Reflection: " + reflectionsRemaining);
-        if (reflectionsRemaining <= 0)
+        if (reflectionsRemaining == 0)
         {
+            Debug.Log("Returning!");
             return;
         }
 
@@ -75,10 +89,12 @@ public class SpearRicochet : MonoBehaviour
             //GetComponent<Transform>().rotation = Quaternion.Euler(direction);
             transform.LookAt(transform.position + direction.normalized * 10);
 
-            ResetIsHit();
+            reflections--;
+
+            Invoke("ResetIsHit", 0.15f);
             GetComponent<Rigidbody>().velocity = transform.forward * 20f;
             //transform.rotation.SetFromToRotation(transform.forward, GetComponent<Rigidbody>().velocity);
-            Debug.Log("current spear velocity " + GetComponent<Rigidbody>().velocity);
+            //Debug.Log("current spear velocity " + GetComponent<Rigidbody>().velocity);
         }
         else
         {
