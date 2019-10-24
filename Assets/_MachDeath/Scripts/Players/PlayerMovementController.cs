@@ -15,6 +15,35 @@ public class PlayerMovementController : MonoBehaviour
     public enum InputState { InputEnabled, InputDisabled }
     public PlayerState m_states;
 
+    #region Movement Events
+    public PlayerMovementEvents m_movementEvents;
+    [System.Serializable]
+    public struct PlayerMovementEvents
+    {
+        [Header("Basic Events")]
+        public PlayerControllerEvent m_onLandedEvent;
+        public PlayerControllerEvent m_onJumpEvent;
+        public PlayerControllerEvent m_onRespawnEvent;
+
+        [Header("Wall Run Events")]
+        public PlayerControllerEvent m_onWallRunBeginEvent;
+        public PlayerControllerEvent m_onWallRunEndEvent;
+        public PlayerControllerEvent m_onWallRunJumpEvent;
+
+        [Header("Wall Climb Events")]
+        public PlayerControllerEvent m_onWallClimbBeginEvent;
+        public PlayerControllerEvent m_onWallClimbEndEvent;
+        public PlayerControllerEvent m_onWallClimbJumpEvent;
+
+        [Header("Wall Jump Events")]
+        public PlayerControllerEvent m_onWallJumpEvent;
+
+        [Header("Leap Events")]
+        public PlayerControllerEvent m_onLeapEvent;
+
+    }
+    #endregion
+
     #region Camera Properties
     [Header("Camera Properties")]
 
@@ -178,15 +207,12 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Start()
     {
-        CalculateJump();
-
         m_characterController = GetComponent<CharacterController>();
 
+        CalculateJump();
         LockCursor();
 
         m_currentMovementSpeed = m_baseMovementSpeed;
-
-
         m_jumpBufferTimer = m_jumpBufferTime;
         m_wallJumpBufferTimer = m_wallJumpBufferTime;
         m_wallRunBufferTimer = m_wallRunBufferTime;
@@ -199,15 +225,9 @@ public class PlayerMovementController : MonoBehaviour
 
     public void PerformController()
     {
-        
-        InputBuffering();
-
         CalculateCurrentSpeed();
 
-        FillSpeedBar();
-
         CheckWallRun();
-
         CalculateVelocity();
 
         m_characterController.Move(m_velocity * Time.deltaTime);
@@ -215,8 +235,9 @@ public class PlayerMovementController : MonoBehaviour
         CalculateGroundPhysics();
 
         CameraRotation();
-
         TiltLerp();
+
+        FillSpeedBar();
     }
 
     #region Input Code
@@ -242,17 +263,54 @@ public class PlayerMovementController : MonoBehaviour
     }
     #endregion
 
-    #region Input Buffering Code
-
-    private void InputBuffering()
+    #region Camera Code
+    private void LockCursor()
     {
-        if (!CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, m_leapBufferCoroutine) && IsGrounded())
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public void ResetCamera()
+    {
+        m_cameraMain.rotation = Quaternion.identity;
+        m_cameraTilt.rotation = Quaternion.identity;
+    }
+
+    private void CameraRotation()
+    {
+        //Get the inputs for the camera
+        Vector2 cameraInput = new Vector2(m_lookInput.y * ((m_inverted) ? -1 : 1), m_lookInput.x);
+
+        //Rotate the player on the y axis (left and right)
+        transform.Rotate(Vector3.up, cameraInput.y * (m_mouseSensitivity));
+
+        float cameraXAng = m_cameraMain.transform.eulerAngles.x;
+
+
+
+        //Stops the camera from rotating, if it hits the resrictions
+        if (cameraInput.x < 0 && cameraXAng > 360 - m_maxCameraAng || cameraInput.x < 0 && cameraXAng < m_maxCameraAng + 10)
         {
-            //m_leapCount = 0;
+            m_cameraMain.transform.Rotate(Vector3.right, cameraInput.x * (m_mouseSensitivity));
+
+        }
+        else if (cameraInput.x > 0 && cameraXAng > 360 - m_maxCameraAng - 10 || cameraInput.x > 0 && cameraXAng < m_maxCameraAng)
+        {
+            m_cameraMain.transform.Rotate(Vector3.right, cameraInput.x * (m_mouseSensitivity));
+
         }
 
-
+        if (m_cameraMain.transform.eulerAngles.x < 360 - m_maxCameraAng && m_cameraMain.transform.eulerAngles.x > 180)
+        {
+            m_cameraMain.transform.localEulerAngles = new Vector3(360 - m_maxCameraAng, 0f, 0f);
+        }
+        else if (m_camera.transform.eulerAngles.x > m_maxCameraAng && m_cameraMain.transform.eulerAngles.x < 180)
+        {
+            m_cameraMain.transform.localEulerAngles = new Vector3(m_maxCameraAng, 0f, 0f);
+        }
     }
+    #endregion
+
+    #region Input Buffering Code
 
     private bool CheckBuffer(ref float p_bufferTimer, ref float p_bufferTime, Coroutine p_bufferTimerRoutine)
     {
@@ -300,6 +358,268 @@ public class PlayerMovementController : MonoBehaviour
         }
 
         m_bufferTimerRef(p_bufferTime);
+    }
+
+    #endregion
+
+    #region Player State Code
+    [System.Serializable]
+    public struct PlayerState
+    {
+        public MovementControllState m_movementControllState;
+        public GravityState m_gravityControllState;
+        public DamageState m_damageState;
+        public InputState m_inputState;
+    }
+
+    private bool IsGrounded()
+    {
+        if (m_characterController.collisionFlags == CollisionFlags.Below)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool OnSlope()
+    {
+        RaycastHit hit;
+
+        Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
+
+        if (Physics.Raycast(bottom, Vector3.down, out hit, 0.2f))
+        {
+            if (hit.normal != Vector3.up)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void OnLanded()
+    {
+        m_isLanded = true;
+
+        m_movementEvents.m_onLandedEvent.Invoke();
+
+        if (CheckBuffer(ref m_jumpBufferTimer, ref m_jumpBufferTime, m_jumpBufferCoroutine))
+        {
+            RunLeap();
+        }
+
+        m_leapBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_leapBufferTimer = (x), m_leapBufferTime));
+    }
+
+    private void OnOffLedge()
+    {
+        m_offLedge = true;
+
+        m_graceBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_graceTimer = (x), m_graceTime));
+
+    }
+
+    public void Respawn()
+    {
+        m_movementEvents.m_onRespawnEvent.Invoke();
+
+        ResetCamera();
+        m_currentLeapTime = 0;
+    }
+    #endregion
+
+    #region Physics Calculation Code
+
+    private void CalculateCurrentSpeed()
+    {
+        float speed = m_baseMovementSpeed;
+
+        speed += m_currentLeapSpeed;
+        speed += m_currentWallRunningSpeed;
+        speed += m_currentSlideSpeed;
+        speed += m_currentWallClimbSpeed;
+        speed += m_currentSpeedBoost;
+
+        m_currentMovementSpeed = speed;
+    }
+
+    public void SpeedBoost(float p_boostAmount)
+    {
+        m_currentSpeedBoost = p_boostAmount;
+    }
+
+    private void CalculateGroundPhysics()
+    {
+        if (IsGrounded() && !OnSlope())
+        {
+            m_velocity.y = 0;
+        }
+
+        if (OnSlope())
+        {
+            RaycastHit hit;
+
+            Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
+
+            if (Physics.Raycast(bottom, Vector3.down, out hit))
+            {
+                m_characterController.Move(new Vector3(0, -(hit.distance), 0));
+            }
+        }
+
+        if (!IsGrounded() && !m_offLedge)
+        {
+            OnOffLedge();
+        }
+        if (IsGrounded())
+        {
+            m_offLedge = false;
+        }
+
+        if (IsGrounded() && !m_isLanded)
+        {
+            OnLanded();
+        }
+        if (!IsGrounded())
+        {
+            m_isLanded = false;
+        }
+    }
+
+    private void CalculateVelocity()
+    {
+        if (m_states.m_gravityControllState == GravityState.GravityEnabled)
+        {
+            m_velocity.y += m_gravity * Time.deltaTime;
+        }
+
+        if (m_states.m_movementControllState == MovementControllState.MovementEnabled)
+        {
+            Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
+
+            Vector3 forwardMovement = transform.forward * input.y;
+            Vector3 rightMovement = transform.right * input.x;
+
+            Vector3 targetHorizontalMovement = Vector3.ClampMagnitude(forwardMovement + rightMovement, 1.0f) * m_currentMovementSpeed;
+            Vector3 horizontalMovement = Vector3.SmoothDamp(m_velocity, targetHorizontalMovement, ref m_velocitySmoothing, m_accelerationTime);
+
+            m_velocity = new Vector3(horizontalMovement.x, m_velocity.y, horizontalMovement.z);
+        }
+
+    }
+    #endregion
+
+    #region Jump Code
+    public void OnJumpInputDown()
+    {
+        m_jumpBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_jumpBufferTimer = (x), m_jumpBufferTime));
+
+        if (CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, m_leapBufferCoroutine) && IsGrounded())
+        {
+            RunLeap();
+            return;
+        }
+
+        if (CheckBuffer(ref m_wallJumpBufferTimer, ref m_wallJumpBufferTime, m_wallJumpBufferCoroutine) && !m_isWallRunning)
+        {
+            WallJump();
+            return;
+        }
+
+        if (CheckBuffer(ref m_graceTimer, ref m_graceTime, m_graceBufferCoroutine) && !IsGrounded() && m_velocity.y <= 0f)
+        {
+            GroundJump();
+            return;
+        }
+
+        if (m_isWallClimbing)
+        {
+            WallRunningJump();
+            return;
+        }
+
+        if (m_isWallRunning)
+        {
+            WallRunningJump();
+            return;
+        }
+
+        if (IsGrounded())
+        {
+            GroundJump();
+            return;
+        }
+
+    }
+
+    public void OnJumpInputUp()
+    {
+        if (m_velocity.y > m_minJumpVelocity)
+        {
+            JumpMinVelocity();
+        }
+    }
+
+    private void CalculateJump()
+    {
+        m_gravity = -(2 * m_maxJumpHeight) / Mathf.Pow(m_timeToJumpApex, 2);
+        m_maxJumpVelocity = Mathf.Abs(m_gravity) * m_timeToJumpApex;
+        m_minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(m_gravity) * m_minJumpHeight);
+    }
+
+    private void WallJump()
+    {
+        m_leapingTimer = 0;
+
+        m_movementEvents.m_onWallJumpEvent.Invoke();
+
+        m_velocity.x = m_wallDir.x * m_wallJumpVelocity.x;
+        m_velocity.y = m_wallJumpVelocity.y;
+        m_velocity.z = m_wallDir.z * m_wallJumpVelocity.z;
+    }
+
+    private void WallRunningJump()
+    {
+        m_isWallRunning = false;
+
+        m_movementEvents.m_onWallRunJumpEvent.Invoke();
+
+        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
+        m_leapingTimer = 0;
+        m_velocity.x = m_wallDir.x * m_wallRunJumpVelocity.x;
+        m_velocity.y = m_wallRunJumpVelocity.y;
+        m_velocity.z = m_wallDir.z * m_wallRunJumpVelocity.z;
+    }
+
+    private void WallClimbingJump()
+    {
+        m_isWallClimbing = false;
+
+        m_movementEvents.m_onWallClimbJumpEvent.Invoke();
+
+        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
+        m_leapingTimer = 0;
+        m_velocity.x = m_wallDir.x * m_wallClimbJumpVelocity.x;
+        m_velocity.y = m_wallClimbJumpVelocity.y;
+        m_velocity.z = m_wallDir.z * m_wallClimbJumpVelocity.z;
+    }
+
+    private void GroundJump()
+    {
+        m_movementEvents.m_onJumpEvent.Invoke();
+        JumpMaxVelocity();
+    }
+
+    private void JumpMaxVelocity()
+    {
+        m_velocity.y = m_maxJumpVelocity;
+    }
+
+    private void JumpMinVelocity()
+    {
+        m_velocity.y = m_minJumpVelocity;
     }
 
     #endregion
@@ -410,6 +730,8 @@ public class PlayerMovementController : MonoBehaviour
     {
         m_isWallClimbing = true;
 
+        m_movementEvents.m_onWallClimbBeginEvent.Invoke();
+
         m_states.m_gravityControllState = GravityState.GravityDisabled;
         m_states.m_movementControllState = MovementControllState.MovementDisabled;
 
@@ -437,12 +759,15 @@ public class PlayerMovementController : MonoBehaviour
         m_states.m_gravityControllState = GravityState.GravityEnabled;
 
         m_currentWallClimbSpeed = 0;
+
+        m_movementEvents.m_onWallClimbEndEvent.Invoke();
     }
 
     private IEnumerator WallRunning()
     {
-        m_isWallRunning = true;
+        m_movementEvents.m_onWallRunBeginEvent.Invoke();
 
+        m_isWallRunning = true;
         m_states.m_gravityControllState = GravityState.GravityDisabled;
         m_states.m_movementControllState = MovementControllState.MovementDisabled;
 
@@ -474,111 +799,8 @@ public class PlayerMovementController : MonoBehaviour
         m_currentWallRunningSpeed = 0;
 
         m_tiltTarget = 0f;
-    }
 
-    #endregion
-
-    #region Jump Code
-    public void OnJumpInputDown()
-    {
-        m_jumpBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_jumpBufferTimer = (x), m_jumpBufferTime));
-
-        if (CheckBuffer(ref m_leapBufferTimer, ref m_leapBufferTime, m_leapBufferCoroutine) && IsGrounded())
-        {
-            RunLeap();
-            return;
-        }
-
-        if (CheckBuffer(ref m_wallJumpBufferTimer, ref m_wallJumpBufferTime, m_wallJumpBufferCoroutine) && !m_isWallRunning)
-        {
-            WallJump();
-            return;
-        }
-
-        if (CheckBuffer(ref m_graceTimer, ref m_graceTime, m_graceBufferCoroutine) && !IsGrounded() && m_velocity.y <= 0f)
-        {
-            JumpMaxVelocity();
-            return;
-        }
-
-        if (m_isWallClimbing)
-        {
-            WallRunningJump();
-            return;
-        }
-
-        if (m_isWallRunning)
-        {
-            WallRunningJump();
-            return;
-        }
-
-        if (IsGrounded())
-        {
-            JumpMaxVelocity();
-            return;
-        }
-
-    }
-
-    public void OnJumpInputUp()
-    {
-        if (m_velocity.y > m_minJumpVelocity)
-        {
-            JumpMinVelocity();
-        }
-    }
-
-    private void CalculateJump()
-    {
-        m_gravity = -(2 * m_maxJumpHeight) / Mathf.Pow(m_timeToJumpApex, 2);
-        m_maxJumpVelocity = Mathf.Abs(m_gravity) * m_timeToJumpApex;
-        m_minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(m_gravity) * m_minJumpHeight);
-    }
-
-    private void WallJump()
-    {
-        m_leapingTimer = 0;
-
-        m_velocity.x = m_wallDir.x * m_wallJumpVelocity.x;
-        m_velocity.y = m_wallJumpVelocity.y;
-        m_velocity.z = m_wallDir.z * m_wallJumpVelocity.z;
-    }
-
-    private void WallRunningJump()
-    {
-        m_isWallRunning = false;
-
-        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
-
-        m_leapingTimer = 0;
-
-        m_velocity.x = m_wallDir.x * m_wallRunJumpVelocity.x;
-        m_velocity.y = m_wallRunJumpVelocity.y;
-        m_velocity.z = m_wallDir.z * m_wallRunJumpVelocity.z;
-    }
-
-    private void WallClimbingJump()
-    {
-        m_isWallClimbing = false;
-
-        m_wallRunBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_wallRunBufferTimer = (x), m_wallRunBufferTime));
-
-        m_leapingTimer = 0;
-
-        m_velocity.x = m_wallDir.x * m_wallClimbJumpVelocity.x;
-        m_velocity.y = m_wallClimbJumpVelocity.y;
-        m_velocity.z = m_wallDir.z * m_wallClimbJumpVelocity.z;
-    }
-
-    private void JumpMaxVelocity()
-    {
-        m_velocity.y = m_maxJumpVelocity;
-    }
-
-    private void JumpMinVelocity()
-    {
-        m_velocity.y = m_minJumpVelocity;
+        m_movementEvents.m_onWallRunEndEvent.Invoke();
     }
 
     #endregion
@@ -588,6 +810,8 @@ public class PlayerMovementController : MonoBehaviour
     private void RunLeap()
     {
         m_leapCount++;
+
+        m_movementEvents.m_onLeapEvent.Invoke();
 
         JumpMaxVelocity();
 
@@ -635,198 +859,6 @@ public class PlayerMovementController : MonoBehaviour
 
     #endregion
 
-    #region Camera Code
-    private void LockCursor()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    public void ResetCamera()
-    {
-        m_cameraMain.rotation = Quaternion.identity;
-        m_cameraTilt.rotation = Quaternion.identity;
-    }
-
-    private void CameraRotation()
-    {
-        //Get the inputs for the camera
-        Vector2 cameraInput = new Vector2(m_lookInput.y * ((m_inverted) ? -1 : 1), m_lookInput.x);
-
-        //Rotate the player on the y axis (left and right)
-        transform.Rotate(Vector3.up, cameraInput.y * (m_mouseSensitivity));
-
-        float cameraXAng = m_cameraMain.transform.eulerAngles.x;
-
-
-
-        //Stops the camera from rotating, if it hits the resrictions
-        if (cameraInput.x < 0 && cameraXAng > 360 - m_maxCameraAng || cameraInput.x < 0 && cameraXAng < m_maxCameraAng + 10)
-        {
-            m_cameraMain.transform.Rotate(Vector3.right, cameraInput.x * (m_mouseSensitivity));
-
-        }
-        else if (cameraInput.x > 0 && cameraXAng > 360 - m_maxCameraAng - 10 || cameraInput.x > 0 && cameraXAng < m_maxCameraAng)
-        {
-            m_cameraMain.transform.Rotate(Vector3.right, cameraInput.x * (m_mouseSensitivity));
-
-        }
-
-        if (m_cameraMain.transform.eulerAngles.x < 360 - m_maxCameraAng && m_cameraMain.transform.eulerAngles.x > 180)
-        {
-            m_cameraMain.transform.localEulerAngles = new Vector3(360 - m_maxCameraAng, 0f, 0f);
-        }
-        else if (m_camera.transform.eulerAngles.x > m_maxCameraAng && m_cameraMain.transform.eulerAngles.x < 180)
-        {
-            m_cameraMain.transform.localEulerAngles = new Vector3(m_maxCameraAng, 0f, 0f);
-        }
-    }
-    #endregion
-
-    #region Player State Code
-    [System.Serializable]
-    public struct PlayerState
-    {
-        public MovementControllState m_movementControllState;
-        public GravityState m_gravityControllState;
-        public DamageState m_damageState;
-        public InputState m_inputState;
-    }
-
-    private bool IsGrounded()
-    {
-        if (m_characterController.collisionFlags == CollisionFlags.Below)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool OnSlope()
-    {
-        RaycastHit hit;
-
-        Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
-
-        if (Physics.Raycast(bottom, Vector3.down, out hit, 0.2f))
-        {
-            if (hit.normal != Vector3.up)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void OnLanded()
-    {
-        m_isLanded = true;
-        
-        if (CheckBuffer(ref m_jumpBufferTimer, ref m_jumpBufferTime, m_jumpBufferCoroutine))
-        {
-            RunLeap();
-        }
-
-        m_leapBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_leapBufferTimer = (x), m_leapBufferTime));
-    }
-
-    private void OnOffLedge()
-    {
-        m_offLedge = true;
-
-        m_graceBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_graceTimer = (x), m_graceTime));
-
-    }
-
-    public void Respawn()
-    {
-        ResetCamera();
-        m_currentLeapTime = 0;
-    }
-    #endregion
-
-    #region Physics Calculation Code
-
-    private void CalculateCurrentSpeed()
-    {
-        float speed = m_baseMovementSpeed;
-
-        speed += m_currentLeapSpeed;
-        speed += m_currentWallRunningSpeed;
-        speed += m_currentSlideSpeed;
-        speed += m_currentWallClimbSpeed;
-        speed += m_currentSpeedBoost;
-
-        m_currentMovementSpeed = speed;
-    }
-
-    public void SpeedBoost(float p_boostAmount)
-    {
-        m_currentSpeedBoost = p_boostAmount;
-    }
-
-    private void CalculateGroundPhysics()
-    {
-        if (IsGrounded() && !OnSlope())
-        {
-            m_velocity.y = 0;
-        }
-
-        if (OnSlope())
-        {
-            RaycastHit hit;
-
-            Vector3 bottom = m_characterController.transform.position - new Vector3(0, m_characterController.height / 2, 0);
-
-            if (Physics.Raycast(bottom, Vector3.down, out hit))
-            {
-                m_characterController.Move(new Vector3(0, -(hit.distance), 0));
-            }
-        }
-
-        if (!IsGrounded() && !m_offLedge)
-        {
-            OnOffLedge();
-        }
-        if (IsGrounded())
-        {
-            m_offLedge = false;
-        }
-
-        if (IsGrounded() && !m_isLanded)
-        {
-            OnLanded();
-        }
-        if (!IsGrounded())
-        {
-            m_isLanded = false;
-        }
-    }
-
-    private void CalculateVelocity()
-    {
-        if (m_states.m_gravityControllState == GravityState.GravityEnabled)
-        {
-            m_velocity.y += m_gravity * Time.deltaTime;
-        }
-
-        if (m_states.m_movementControllState == MovementControllState.MovementEnabled)
-        {
-            Vector2 input = new Vector2(m_movementInput.x, m_movementInput.y);
-
-            Vector3 forwardMovement = transform.forward * input.y;
-            Vector3 rightMovement = transform.right * input.x;
-
-            Vector3 targetHorizontalMovement = Vector3.ClampMagnitude(forwardMovement + rightMovement, 1.0f) * m_currentMovementSpeed;
-            Vector3 horizontalMovement = Vector3.SmoothDamp(m_velocity, targetHorizontalMovement, ref m_velocitySmoothing, m_accelerationTime);
-
-            m_velocity = new Vector3(horizontalMovement.x, m_velocity.y, horizontalMovement.z);
-        }
-
-    }
-    #endregion
-
     #region Slide Code
 
     private void StartSlide()
@@ -872,8 +904,6 @@ public class PlayerMovementController : MonoBehaviour
 
         float progress2 = m_boostCurve.Evaluate(m_currentMovementSpeed / m_maxSpeedBoost);
         m_boostSpeedometer.fillAmount = progress2;
-
-
     }
 
     private IEnumerator KnockBack()
