@@ -23,6 +23,8 @@ public class WeaponController : MonoBehaviour
     //These should be in weapon stats
     private float firingSince, fireDelay;
 
+    public bool itemInUse;
+
     //Set current weapon index to 0 at start
     //private int currentItemIndex = 0;
 
@@ -30,6 +32,7 @@ public class WeaponController : MonoBehaviour
     void Start()
     {
         filterChildren();
+        itemInUse = false;
     }
 
     private void filterChildren()
