@@ -64,6 +64,9 @@ public abstract class ItemBase : MonoBehaviour
     protected void SetReadyToFire()
     {
         readyToUse = true;
+
+        //Do not do this here, it may be too fast
+        //weaponController.itemInUse = false;
     }
     protected abstract void GetItemType();
     protected abstract void GetItemData();

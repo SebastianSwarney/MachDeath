@@ -41,7 +41,7 @@ public class WeaponBase : ItemBase
     {
         GetItemType();
         GetItemData();
-        
+
     }
     protected override void GetItemType()
     {
@@ -58,8 +58,12 @@ public class WeaponBase : ItemBase
 
     protected override void ApplyUseItem()
     {
-        Debug.Log("Using Weapon");
-        ShootGun();
+        if (!weaponController.itemInUse)
+        {
+            Debug.Log("Using Weapon");
+            //weaponController.itemInUse = true;
+            ShootGun();
+        }
     }
 
     // Update is called once per frame
