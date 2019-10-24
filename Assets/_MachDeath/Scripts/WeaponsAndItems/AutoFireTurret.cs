@@ -8,18 +8,32 @@ public class AutoFireTurret : MonoBehaviour
     public SpearEvent m_throwSpear;
     //Networking THings    public SpearEvent m_throwSpear;
 
-    public float coolDown;
+    public float coolDown, fireDelay;
+
+    public GameObject spear;
 
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(CountDown());
+        StartCoroutine(FireDelay());
     }
 
     // Update is called once per frame
     void Update()
     {
 
+
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(FireDelay());
+    }
+
+    private IEnumerator FireDelay()
+    {
+        yield return new WaitForSeconds(fireDelay);
+        StartCoroutine(CountDown());
     }
 
     private IEnumerator CountDown()
@@ -27,16 +41,14 @@ public class AutoFireTurret : MonoBehaviour
         float duration = coolDown;
 
         float totalTime = 0;
-        //while (true)
-        //{
+
         while (totalTime < duration)
         {
             totalTime += Time.deltaTime;
             yield return null;
         }
+        Debug.Log("Firing Gatling");
         ShootGun();
-        duration = coolDown;
-        //}
     }
 
     private void ShootGun()
@@ -44,7 +56,13 @@ public class AutoFireTurret : MonoBehaviour
         //CalculateShot();
         //this.transform.LookAt((CalculateShot().point) + new Vector3(0,-90,0));
 
-        m_throwSpear.Invoke();
+        //GameObject SpawnedSpear = Instantiate(spear);
+        //SpawnedSpear.transform.position = this.transform.GetChild(0).position;
+        //SpawnedSpear.transform.localRotation = this.transform.GetChild(0).localRotation;
+
+        m_throwSpear?.Invoke();
+
         //this.transform.LookAt((CalculateShot()));
+        StartCoroutine(CountDown());
     }
 }
