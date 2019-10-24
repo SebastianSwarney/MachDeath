@@ -11,10 +11,13 @@ public class UtilityBase : ItemBase
     private float LerpTimer;
 
     [SerializeField]
-    private float LerpSpeed;
+    private float LerpSpeed, shieldOffset;
 
     [SerializeField]
     private AnimationCurve animationCurve;
+
+    [SerializeField]
+    private bool isShieldRaised;
 
     private Vector3 defefaultShield;
 
@@ -22,6 +25,7 @@ public class UtilityBase : ItemBase
     {
         GetItemType();
         GetItemData();
+        isShieldRaised = false;
     }
     protected override void GetItemType()
     {
@@ -37,18 +41,58 @@ public class UtilityBase : ItemBase
 
     protected override void ApplyUseItem()
     {
-        Debug.Log("Using Shield");
-        LerpTimer = 0;
-        //this.transform.position = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
+        if (!isShieldRaised)
+        {
+            Debug.Log("Using Shield");
+            LerpTimer = 0;
+            isShieldRaised = true;
+            //this.transform.position = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
+        }
     }
     // Start is called before the first frame update
-  
+
 
     // Update is called once per frame
     void Update()
     {
+        //This is the visualization of the shield not the actual logic behind it
+        if (isShieldRaised)
+        {
+            RaiseShield();
+            //StartCoroutine(CountDown());
+        }
+        else
+        {
+            LowerShield();
+        }
+    }
+
+    private void RaiseShield()
+    {
         LerpTimer += Time.deltaTime;
-        Vector3 offset = new Vector3(0.2f, 0, 0);
-        this.transform.localPosition = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
+        Vector3 offset = new Vector3(shieldOffset, 0, 0);
+        this.transform.localPosition = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * 3 * LerpSpeed)));
+
+        if ((LerpTimer * 3 * LerpSpeed) >= 1)
+        {
+            StartCoroutine(WaitToSheath());
+        }
+    }
+
+    private void LowerShield()
+    {
+        LerpTimer += Time.deltaTime;
+        Vector3 offset = new Vector3(shieldOffset, 0, 0);
+        this.transform.localPosition = Vector3.Lerp(this.transform.localPosition, defefaultShield, animationCurve.Evaluate(((LerpTimer) * 3 * LerpSpeed)));
+    }
+
+    private IEnumerator WaitToSheath()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log("Resetting Shield");
+        isShieldRaised = false;
+        LerpTimer = 0;
     }
 }
+
+

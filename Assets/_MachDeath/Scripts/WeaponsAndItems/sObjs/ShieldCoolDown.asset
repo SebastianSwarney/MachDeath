@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6187afa3f68be24ebaeb5b151af3c8f, type: 3}
   m_Name: ShieldCoolDown
   m_EditorClassIdentifier: 
-  itemCoolDown: 2
+  itemCoolDown: 0.5
   hitMarker: {fileID: 6394898243497993913, guid: e6f96ace31b38fd4ebb6574f07fc5c16,
     type: 3}
