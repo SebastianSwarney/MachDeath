@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+[System.Serializable]
+public class SpearEventAuto : UnityEngine.Events.UnityEvent { }
+
+
 public class AutoFireTurret : MonoBehaviour
 {
 
-    public SpearEvent m_throwSpear;
+    public SpearEventAuto m_throwSpear;
     //Networking THings    public SpearEvent m_throwSpear;
 
     public float coolDown, fireDelay;
 
-    public GameObject spear;
+    //public GameObject spear;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +38,7 @@ public class AutoFireTurret : MonoBehaviour
 
     private IEnumerator FireDelay()
     {
-        yield return new WaitForSeconds(fireDelay);
+        yield return new WaitForSeconds(fireDelay + 1f);
         StartCoroutine(CountDown());
     }
 
