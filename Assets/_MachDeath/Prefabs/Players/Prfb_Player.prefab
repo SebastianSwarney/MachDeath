@@ -516,6 +516,7 @@ MonoBehaviour:
   m_cameraMain: {fileID: 1241036337627567655}
   m_baseMovementSpeed: 10
   m_accelerationTime: 0.1
+  m_velocity: {x: 0, y: 0, z: 0}
   m_maxJumpHeight: 5
   m_minJumpHeight: 1
   m_timeToJumpApex: 0.5
@@ -848,7 +849,8 @@ MonoBehaviour:
   syncInterval: 0.1
   m_spearObject: {fileID: 3898591385045717469, guid: 07bfdc5a2cfa4184d96a9bff0772f30d,
     type: 3}
-  m_throwSpeed: 50
+  m_minSpeed: 30
+  m_maxSpeed: 100
   m_fireSpot: {fileID: 3344700138082345808}
 --- !u!1 &4419650568909376681
 GameObject:

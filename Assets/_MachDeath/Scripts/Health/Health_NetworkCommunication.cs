@@ -78,7 +78,7 @@ namespace Mirror.MachDeath
                 Transform newSpawn = m_spawnManager.NewSpawnPointFFA();
                 transform.position = newSpawn.position;
                 transform.eulerAngles = new Vector3(0f, newSpawn.transform.eulerAngles.y, 0f);
-                
+                CmdSetPlayerPosition(newSpawn.position, newSpawn.transform.eulerAngles.y);   
             }
             m_healthEvent.Invoke();
             m_visualState.SetActive(true);
@@ -88,7 +88,21 @@ namespace Mirror.MachDeath
             m_movementCont.enabled = true;
         }
 
-        
+        [Command]
+        private void CmdSetPlayerPosition(Vector3 p_newSpawnPoint, float p_yRot)
+        {
+            transform.position = p_newSpawnPoint;
+            transform.eulerAngles = new Vector3(0f, p_yRot, 0f);
+            RpcSetPlayerPosition(p_newSpawnPoint, p_yRot);
+        }
+
+        [ClientRpc]
+        private void RpcSetPlayerPosition(Vector3 p_newSpawnPoint, float p_yRot)
+        {
+            transform.position = p_newSpawnPoint;
+            transform.eulerAngles = new Vector3(0f, p_yRot, 0f);
+        }
+
 
     }
 }

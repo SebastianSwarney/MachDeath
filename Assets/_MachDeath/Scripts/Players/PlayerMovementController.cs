@@ -64,7 +64,8 @@ public class PlayerMovementController : MonoBehaviour
     public float m_accelerationTime;
 
     private float m_currentMovementSpeed;
-    private Vector3 m_velocity;
+    [HideInInspector]
+    public Vector3 m_velocity;
     private Vector3 m_velocitySmoothing;
     private CharacterController m_characterController;
 
