@@ -738,6 +738,12 @@ public class PlayerMovementController : MonoBehaviour
         m_graceBufferCoroutine = StartCoroutine(RunBufferTimer((x) => m_graceTimer = (x), m_graceTime));
 
     }
+
+    public void Respawn()
+    {
+        ResetCamera();
+        m_currentLeapTime = 0;
+    }
     #endregion
 
     #region Physics Calculation Code

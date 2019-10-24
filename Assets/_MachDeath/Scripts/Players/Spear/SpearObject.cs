@@ -14,7 +14,6 @@ public class SpearObject : MonoBehaviour
     private bool m_reflected;
 
 
-
     private void Start()
     {
         m_body = GetComponent<Rigidbody>();
