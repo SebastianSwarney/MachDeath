@@ -333,7 +333,7 @@ GameObject:
   - component: {fileID: 865858181429369223}
   - component: {fileID: -2667287903190575809}
   - component: {fileID: 1928843183793329397}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Prfb_Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -696,9 +696,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_maxMovementSpeed: 50
   m_maxSpeedBoost: 50
-  m_impact: {x: 0, y: 0, z: 0}
-  m_rb: {fileID: 4419650568852719274}
-  shit: 30
 --- !u!136 &4419650568852719273
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1371,6 +1368,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AssetId
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619383966061463, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4781392514197262166, guid: 52421cfb6a952b64ebe4c38078454fa4, type: 3}

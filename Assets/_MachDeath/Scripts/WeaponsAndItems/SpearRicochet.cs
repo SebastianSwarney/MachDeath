@@ -52,7 +52,7 @@ public class SpearRicochet : MonoBehaviour
             Ray ray = new Ray(this.transform.position, this.transform.forward * 3f);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, 2.0f))
+            if (Physics.Raycast(ray, out hit, 2.0f,collisionMask))
             {
                 RayHitNew(this.transform.position + this.transform.forward * 0.75f, this.transform.forward, (int)reflections);
             }
@@ -67,10 +67,10 @@ public class SpearRicochet : MonoBehaviour
     private void RayHitNew(Vector3 position, Vector3 direction, int reflectionsRemaining)
     {
 
-        Debug.Log("Reflection: " + reflectionsRemaining);
+        //Debug.Log("Reflection: " + reflectionsRemaining);
         if (reflectionsRemaining == 0)
         {
-            Debug.Log("Returning!");
+            ///Debug.Log("Returning!");
             return;
         }
 
@@ -79,7 +79,7 @@ public class SpearRicochet : MonoBehaviour
         Ray ray = new Ray(position, direction);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, maxReflectionDistance) && !isRayHit)
+        if (Physics.Raycast(ray, out hit, maxReflectionDistance, collisionMask) && !isRayHit)
         {
             isRayHit = true;
             direction = Vector3.Reflect(direction, hit.normal);
