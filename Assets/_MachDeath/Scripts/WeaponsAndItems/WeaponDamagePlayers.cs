@@ -13,14 +13,23 @@ namespace Mirror.MachDeath
         {
             m_spearProperties = GetComponent<ProjectileProperties>();
         }
-        private void OnCollisionEnter(Collision collision)
+        private void OnTriggerEnter(Collider other)
         {
-            Health hitHealth = collision.transform.GetComponent<Health>();
+            
+            Health hitHealth = other.transform.GetComponent<Health>();
             if (hitHealth != null)
             {
+                PlayerProperties playerProps = other.transform.GetComponent<PlayerProperties>();
+                if (playerProps != null)
+                {
+                    if (playerProps == m_spearProperties.m_spearOwner)
+                    {
+                        return;
+                    }
+                }
+                
                 hitHealth.TakeDamageSpear(m_spearDamage, m_spearProperties.m_spearOwner);
             }
-
         }
 
 

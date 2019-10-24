@@ -52,7 +52,7 @@ public class PlayerMouseItemsInput : MonoBehaviour
 
     void ItemUse()
     {
-        Debug.Log("current Index is: " + currentLeftUsableIndex);
+
         var Items = weaponController.usableItemsLeftClick;
 
         if (Items[currentLeftUsableIndex])

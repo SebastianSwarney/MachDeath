@@ -88,7 +88,7 @@ namespace Mirror.MachDeath
         
         public void TakeDamageSpear(float p_appliedDamage, PlayerProperties p_spearOwner)
         {
-            
+            print("Damaged");
             if (!m_isDead)
             {
 
@@ -169,7 +169,7 @@ namespace Mirror.MachDeath
             }
         }
 
-        [Server]
+        [Client]
         private void ChangeHealth(float p_appliedDamage)
         {
             m_currentHealth += p_appliedDamage;
