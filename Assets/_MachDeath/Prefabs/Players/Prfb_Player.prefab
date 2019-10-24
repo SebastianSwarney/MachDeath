@@ -452,6 +452,62 @@ MonoBehaviour:
     m_gravityControllState: 0
     m_damageState: 0
     m_inputState: 0
+  m_movementEvents:
+    m_onLandedEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onJumpEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onRespawnEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallRunBeginEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallRunEndEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallRunJumpEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallClimbBeginEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallClimbEndEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallClimbJumpEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onWallJumpEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    m_onLeapEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: PlayerControllerEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
   m_mouseSensitivity: 0.5
   m_maxCameraAng: 75
   m_inverted: 1
@@ -1150,11 +1206,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4419650569349292682}
     m_Modifications:
-    - target: {fileID: 6974619382277271986, guid: 52421cfb6a952b64ebe4c38078454fa4,
-        type: 3}
-      propertyPath: m_Name
-      value: ItemsManager
-      objectReference: {fileID: 0}
     - target: {fileID: 6974619382277271987, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1210,6 +1261,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6974619382277271986, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: m_Name
+      value: ItemsManager
+      objectReference: {fileID: 0}
     - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}
       propertyPath: m_throwSpear.m_PersistentCalls.m_Calls.Array.size
@@ -1238,7 +1294,7 @@ PrefabInstance:
     - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}
       propertyPath: m_throwSpear.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CmdCreateSpear
+      value: SpawnSpear
       objectReference: {fileID: 0}
     - target: {fileID: 6974619382989764813, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}
