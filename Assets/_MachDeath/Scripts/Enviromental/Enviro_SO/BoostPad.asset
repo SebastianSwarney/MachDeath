@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: BoostPad
   m_EditorClassIdentifier: 
   name: BoostPad
-  m_Force: 10000
+  m_Force: 100
   m_HealthPickUpAmount: 0
