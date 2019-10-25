@@ -11,7 +11,8 @@ namespace Mirror.MachDeath
         public SObj_EffectVariables m_effectVarSO;
         public GameObject m_Player;
 
-
+        public LayerMask mask;
+       
         public SpeedBoostEvent m_onSpeedBoost = new SpeedBoostEvent();
 
         //this would need to be the health value on the player controller script.
@@ -27,6 +28,7 @@ namespace Mirror.MachDeath
         {
 
         }
+
 
         private void OnDrawGizmos()
         {
@@ -46,9 +48,24 @@ namespace Mirror.MachDeath
         }
 
 
+
+        public bool CheckCollisionLayer(LayerMask p_layerMask, GameObject p_collision)
+        {
+            if (p_layerMask == (p_layerMask | (1 << p_collision.gameObject.layer)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+
         override public void OnTriggerEnter(Collider other)
         {
-            if (other.tag == "Player")
+            if (CheckCollisionLayer(mask, m_Player))
             {
                
                 if (m_effectVarSO.name == "BoostPad")
@@ -66,7 +83,20 @@ namespace Mirror.MachDeath
                    
                 }
 
+            }
+        }
 
+        public void OnTriggerExit(Collider other)
+        {
+            if(CheckCollisionLayer(mask, m_Player))
+            {
+                if (m_effectVarSO.name == "BoostPad")
+                {
+                    Debug.Log("SHOULD BE BOOSTING");
+
+                    other.transform.GetComponent<PlayerMovementController>().SpeedBoost(0);
+                    m_onSpeedBoost.Invoke();
+                }
 
             }
         }
