@@ -16,6 +16,21 @@ namespace Mirror.MachDeath{
                 
                 
             }
+
+            PooledObject pooler = collision.GetComponent<PooledObject>();
+            if (pooler != null)
+            {
+                pooler.DestroyObject();
+            }
+            else
+            {
+                pooler = collision.GetComponentInParent<PooledObject>();
+                if (pooler != null)
+                {
+                    pooler.DestroyObject();
+                }
+            }
+            print("Hit Object: " + collision.gameObject.name);
         }
 
 

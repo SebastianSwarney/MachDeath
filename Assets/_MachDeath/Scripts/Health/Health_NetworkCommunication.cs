@@ -14,6 +14,7 @@ namespace Mirror.MachDeath
         private Coroutine m_diedCoroutine;
         public PlayerInput m_input;
         public PlayerMovementController m_movementCont;
+        public NetworkPlayer m_networkPlayer;
 
         private GameTypeManager m_currentGameType;
         private PlayerProperties m_playerProperties;
@@ -39,10 +40,12 @@ namespace Mirror.MachDeath
         
         private void DisablePlayer(PlayerProperties p_killer)
         {
+            print("Died");
             m_visualState.SetActive(false);
 
             m_input.enabled = false;
             m_movementCont.enabled = false;
+            m_networkPlayer.enabled = false;
             if (m_currentGameType != null)
             {
                 m_currentGameType.PlayerDied(m_playerProperties, p_killer);
@@ -86,6 +89,7 @@ namespace Mirror.MachDeath
             yield return new WaitForFixedUpdate();
             m_input.enabled = true;
             m_movementCont.enabled = true;
+            m_networkPlayer.enabled = true;
         }
 
         [Command]

@@ -448,8 +448,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 2976975827
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -695,6 +695,7 @@ MonoBehaviour:
   m_wallClimbSpeedUpTime: 1
   m_wallClimbFactor: 0.5
   m_wallClimbJumpVelocity: {x: 10, y: 30, z: 100}
+  m_localWallFacingVector: {x: 0, y: 0, z: 0}
   m_slideTime: 3
   m_slideCurve:
     serializedVersion: 2
@@ -877,7 +878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  m_deathTimer: 1
+  m_deathTimer: 100
   m_healthEvent:
     m_PersistentCalls:
       m_Calls:
@@ -929,6 +930,7 @@ MonoBehaviour:
   m_minSpeed: 30
   m_maxSpeed: 100
   m_fireSpot: {fileID: 3344700138082345808}
+  m_playerVel: {x: 0, y: 0, z: 0}
 --- !u!114 &1295089349406030659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1231,8 +1233,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
-  m_SceneId: 0
+  m_AssetId: 
+  m_SceneId: 4028067269
 --- !u!114 &4345370976476934846
 MonoBehaviour:
   m_ObjectHideFlags: 0
