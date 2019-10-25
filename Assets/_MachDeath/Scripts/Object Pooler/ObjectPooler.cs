@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror.MachDeath {
+namespace Mirror.MachDeath
+{
 
-    public class ObjectPooler : MonoBehaviour {
+    public class ObjectPooler : MonoBehaviour
+    {
 
         #region Variables
 
@@ -17,7 +19,7 @@ namespace Mirror.MachDeath {
         public List<GameObject> pooledObjects;
         public List<Transform> pooledObjectParents;
         public Dictionary<string, Queue<GameObject>> objectPool = new Dictionary<string, Queue<GameObject>>();
-        
+
 
         public int growthRate = 5;
         public int initalPoolSize = 5;
@@ -43,7 +45,7 @@ namespace Mirror.MachDeath {
                 GameObject newPool = new GameObject();
                 newPool.transform.parent = m_networkParent;
                 newPool.AddComponent<ObjectPooler_Network>();
-                    newPool.name = networkedObject.name + " Pool";
+                newPool.name = networkedObject.name + " Pool";
 
                 ObjectPooler_Network networkedPool = newPool.GetComponent<ObjectPooler_Network>();
                 networkedPool.InitializePooler(networkedObject);
