@@ -18,7 +18,7 @@ public class AutoRotate : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime * 0.33f;
-        timer = Mathf.Clamp(timer, 0, 2);
+        timer = Mathf.Clamp(timer, 0, 1);
         Rotate();
     }
 
