@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace Mirror.MachDeath
 {
-    public class ThrowSpearAuto : NetworkBehaviour
+    public class ThrowSpearAuto : MonoBehaviour
     {
-
         public GameObject m_spearObject;
 
         public float m_minSpeed, m_maxSpeed;
@@ -15,10 +14,8 @@ namespace Mirror.MachDeath
         public Transform m_fireSpot;
 
         private PlayerProperties m_playerProperties;
-        ObjectPooler_Network m_spearPool;
         private void Start()
         {
-            m_spearPool = ObjectPooler.instance.GetPooler(m_spearObject.name);
             m_playerProperties = GetComponent<PlayerProperties>();
             m_player = GetComponent<PlayerMovementController>();
         }
@@ -33,11 +30,9 @@ namespace Mirror.MachDeath
         [Command]
         public void CmdCreateSpear(Vector3 p_pos, Quaternion p_quat, Vector3 p_dir, float p_speed)
         {
-
-            GameObject newSpear = m_spearPool.NewObject(m_fireSpot.position);
+            GameObject newSpear = Instantiate(m_spearObject);
             newSpear.transform.position = p_pos;
             newSpear.transform.rotation = p_quat;
-            newSpear.SetActive(true);
 
             newSpear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
             NetworkServer.Spawn(newSpear);

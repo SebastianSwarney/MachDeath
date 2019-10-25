@@ -32,11 +32,6 @@ public class UtilityBase : ItemBase
 
     public ShieldActiveEvent m_shieldEvent;
 
-    //Shield Regen Params
-    public float shieldRegenerateTimer;
-
-    public Image shieldRegenCounter;
-
     void Start()
     {
         GetItemType();
@@ -45,7 +40,7 @@ public class UtilityBase : ItemBase
         shieldCollider = transform.GetChild(0).gameObject;
         shieldCollider.SetActive(false);
         spearTag = spearPrefab.gameObject.tag;
-        shieldRegenCounter.gameObject.SetActive(false);
+       
     }
     protected override void GetItemType()
     {
@@ -119,28 +114,6 @@ public class UtilityBase : ItemBase
 
         isShieldRaised = false;
         LerpTimer = 0;
-    }
-
-    public IEnumerator Countdown()
-    {
-        float duration = shieldRegenerateTimer;
-        // 3 seconds you can change this to
-        //to whatever you want
-        float totalTime = 0;
-
-        while (totalTime <= duration)
-        {
-            Debug.Log("Shield Regenerate Timer Started!");
-            shieldRegenCounter.gameObject.SetActive(true);
-            shieldRegenCounter.fillAmount = totalTime / duration;
-            totalTime += Time.deltaTime;
-            //var integer = (int)totalTime; /* choose how to quantize this */
-            /* convert integer to string and assign to text */
-            yield return null;
-        }
-
-        gameObject.SetActive(true);
-        gameObject.GetComponentInChildren<ShieldHealthCheck>().ResetHealth();
     }
 }
 

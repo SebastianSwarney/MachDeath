@@ -4,8 +4,8 @@ using UnityEngine;
 
 public abstract class ItemBase : MonoBehaviour
 {
-    [SerializeField]
-    protected WeaponController weaponController;
+    //[SerializeField]
+    public WeaponController weaponController;
 
     [SerializeField]
     protected sObj_ItemStats itemstats;

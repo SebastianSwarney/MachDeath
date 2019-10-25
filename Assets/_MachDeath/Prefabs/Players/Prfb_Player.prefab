@@ -448,8 +448,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 
-  m_SceneId: 2976975827
+  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
+  m_SceneId: 0
 --- !u!114 &8830782116051612390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -897,6 +897,7 @@ MonoBehaviour:
   m_visualState: {fileID: 4419650568909376681}
   m_input: {fileID: 1106223046}
   m_movementCont: {fileID: 4419650568852719279}
+  m_networkPlayer: {fileID: 0}
 --- !u!114 &-2667287903190575809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1233,8 +1234,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 1
-  m_AssetId: 
-  m_SceneId: 4028067269
+  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
+  m_SceneId: 0
 --- !u!114 &4345370976476934846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1519,6 +1520,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6974619382277271981, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: shieldRegenerateTimer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619382277271981, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: shieldRegenCounter
+      value: 
+      objectReference: {fileID: 2364568035857679424}
     - target: {fileID: 6974619383966061458, guid: 52421cfb6a952b64ebe4c38078454fa4,
         type: 3}
       propertyPath: m_shieldEvent.m_PersistentCalls.m_Calls.Array.size

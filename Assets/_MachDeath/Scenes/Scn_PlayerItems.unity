@@ -4425,7 +4425,7 @@ MonoBehaviour:
   networkAddress: localhost
   maxConnections: 4
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 4419650568852719188, guid: 992b67d616d85cc45a05ca80fd2b7092,
+  playerPrefab: {fileID: 4419650568852719188, guid: c2eb00a9c1b7ea24ca920833a620b372,
     type: 3}
   autoCreatePlayer: 0
   playerSpawnMethod: 0
@@ -12228,7 +12228,7 @@ PrefabInstance:
     - target: {fileID: 7421312876133178585, guid: c82c07b3a4c595341a85adacdffa46c1,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7421312876649232174, guid: c82c07b3a4c595341a85adacdffa46c1,
         type: 3}

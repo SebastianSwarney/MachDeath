@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 3016957882438555084}
   m_Layer: 10
   m_Name: SpearPrefab
-  m_TagString: Untagged
+  m_TagString: Spear
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 
+  m_AssetId: 07bfdc5a2cfa4184d96a9bff0772f30d
   m_SceneId: 0
 --- !u!114 &3648824628411775770
 MonoBehaviour:
@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 3727295399958216714}
   m_Layer: 10
   m_Name: HitBox
-  m_TagString: Untagged
+  m_TagString: Spear
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

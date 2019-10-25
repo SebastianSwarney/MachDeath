@@ -61,7 +61,7 @@ public class WeaponBase : ItemBase
         if (!weaponController.itemInUse)
         {
             Debug.Log("Using Weapon");
-            weaponController.itemInUse = true;
+            //weaponController.itemInUse = true;
             ShootGun();
         }
     }

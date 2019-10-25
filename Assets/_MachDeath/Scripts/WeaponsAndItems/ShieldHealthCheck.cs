@@ -13,13 +13,14 @@ public class ShieldHealthCheck : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        shieldData.GetComponentInParent<UtilityBase>();
+        shieldData = GetComponentInParent<UtilityBase>();
         utilityBase = shieldData.GetComponentInParent<UtilityBase>().gameObject;
+        shieldHealth = maxShieldHealth;
     }
 
     private void OnEnable()
     {
-     
+
     }
 
     public void ResetHealth()
@@ -31,6 +32,7 @@ public class ShieldHealthCheck : MonoBehaviour
     void Update()
     {
         HealthCheck();
+        ManualDamage();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -42,8 +44,26 @@ public class ShieldHealthCheck : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == shieldData.spearTag)
+        {
+            Debug.Log("Shield Damaged " + spearDamage);
+            DamageShield(spearDamage);
+        }
+    }
+
+    private void ManualDamage()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            DamageShield(spearDamage);
+        }
+    }
+
     void DamageShield(float damage)
     {
+        Debug.Log("Shield took " + damage + "Damage!!!");
         shieldHealth -= damage;
     }
 
@@ -53,9 +73,10 @@ public class ShieldHealthCheck : MonoBehaviour
         {
             //Despawn Shield Right here
             Debug.Log("Shield Broken!!!");
-            //Active Renegerate Cycle for Shield Before it comes back
-            StartCoroutine(shieldData.GetComponentInParent<UtilityBase>().Countdown());
-            utilityBase.SetActive(false);
+
+            //Dont need all these below just need to tell weaponmanager to deactive everything
+            //So the logic for reactivating and deactivng the shield can be handled purely by the WeaponManager
+            shieldData.weaponController.DeActivateShield();
         }
     }
 }

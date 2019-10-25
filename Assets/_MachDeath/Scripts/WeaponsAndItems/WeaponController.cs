@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WeaponController : MonoBehaviour
 {
@@ -25,6 +26,11 @@ public class WeaponController : MonoBehaviour
 
     public bool itemInUse;
 
+    //Shield Regen Params
+    public float shieldRegenerateTimer;
+
+    public Image shieldRegenCounter;
+
     //Set current weapon index to 0 at start
     //private int currentItemIndex = 0;
 
@@ -33,6 +39,8 @@ public class WeaponController : MonoBehaviour
     {
         filterChildren();
         itemInUse = false;
+        //Dont forget to drag and drop this
+        shieldRegenCounter.gameObject.SetActive(false);
     }
 
     private void filterChildren()
@@ -44,7 +52,7 @@ public class WeaponController : MonoBehaviour
 
             GameObject child = transform.GetChild(i - 1).gameObject;
 
-            if(child.GetComponent<WeaponBase>())
+            if (child.GetComponent<WeaponBase>())
             {
                 weapons.Add(child);
                 PlaceItems(child, usableItemsLeftClick);
@@ -69,19 +77,41 @@ public class WeaponController : MonoBehaviour
         List.Add(Item);
     }
 
+    public void DeActivateShield()
+    {
+        //Shut down Shield Here
+        var ShieldObj = utility[0].gameObject;
+        ShieldObj.SetActive(false);
+        StartCoroutine(Countdown());
+    }
+
+    private IEnumerator Countdown()
+    {
+        float duration = shieldRegenerateTimer;
+        // 3 seconds you can change this to
+        //to whatever you want
+        float totalTime = 0;
+
+        while (totalTime <= duration)
+        {
+            Debug.Log("Shield Regenerate Timer Started!");
+            shieldRegenCounter.gameObject.SetActive(true);
+            shieldRegenCounter.fillAmount = totalTime / duration;
+            totalTime += Time.deltaTime;
+            //var integer = (int)totalTime; /* choose how to quantize this */
+            /* convert integer to string and assign to text */
+            yield return null;
+        }
+
+        var ShieldObj = utility[0].gameObject;
+        shieldRegenCounter.gameObject.SetActive(false);
+        ShieldObj.SetActive(true);
+        ShieldObj.GetComponentInChildren<ShieldHealthCheck>().ResetHealth();
+    }
+
     // Update is called once per frame
     void Update()
     {
 
     }
-}
-
-public class Spear : WeaponBase
-{
-
-}
-
-public class Shield : WeaponBase
-{
-
 }

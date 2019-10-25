@@ -184,6 +184,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3344700137367759404, guid: c2eb00a9c1b7ea24ca920833a620b372,
+        type: 3}
+      propertyPath: shieldRegenCounter
+      value: 
+      objectReference: {fileID: 5463619743331186922}
+    - target: {fileID: 3344700137367759404, guid: c2eb00a9c1b7ea24ca920833a620b372,
+        type: 3}
+      propertyPath: shieldRegenerateTimer
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 3344700137047345171, guid: c2eb00a9c1b7ea24ca920833a620b372,
         type: 3}
       propertyPath: spearPrefab
@@ -211,3 +221,15 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7710742194832456874}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5463619743331186922 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2364568035857679424, guid: c2eb00a9c1b7ea24ca920833a620b372,
+    type: 3}
+  m_PrefabInstance: {fileID: 7710742194832456874}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
