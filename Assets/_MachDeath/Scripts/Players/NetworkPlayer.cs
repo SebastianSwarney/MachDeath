@@ -7,7 +7,7 @@ namespace Mirror.MachDeath{
     {
         private PlayerInput m_input;
         private PlayerMovementController m_movementController;
-        public GameObject m_camera;
+        public Camera m_camera;
         public KeyCode m_pauseKey;
         private bool m_mouseLocked = true;
 
@@ -24,7 +24,7 @@ namespace Mirror.MachDeath{
         {
             if (!isLocalPlayer)
             {
-                m_camera.SetActive(false);
+                m_camera.enabled = false;
             }
         }
 

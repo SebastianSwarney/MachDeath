@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+
+[System.Serializable]
+public class SpearCollisionEvent: UnityEngine.Events.UnityEvent { }
+
 public class SpearRicochet : MonoBehaviour
 {
     public LayerMask collisionMask;
@@ -18,6 +22,7 @@ public class SpearRicochet : MonoBehaviour
 
     private bool isRayHit;
 
+    public SpearCollisionEvent m_spearCollision;
 
     // Start is called before the first frame update
     void Start()
@@ -108,4 +113,10 @@ public class SpearRicochet : MonoBehaviour
     {
         isRayHit = false;
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        m_spearCollision?.Invoke();
+    }
+
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class ShieldActiveEvent: UnityEngine.Events.UnityEvent <bool>{ }
 public class UtilityBase : ItemBase
 {
     [SerializeField]
@@ -23,6 +25,8 @@ public class UtilityBase : ItemBase
     private GameObject shieldCollider;
 
     private Vector3 defefaultShield;
+
+    public ShieldActiveEvent m_shieldEvent;
 
     void Start()
     {
@@ -48,11 +52,10 @@ public class UtilityBase : ItemBase
     {
         if (!isShieldRaised && !weaponController.itemInUse)
         {
-            Debug.Log("Using Shield");
             LerpTimer = 0;
             isShieldRaised = true;
             weaponController.itemInUse = true;
-            shieldCollider.SetActive(true);
+            m_shieldEvent.Invoke(true);
             //this.transform.position = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
         }
     }
@@ -95,14 +98,14 @@ public class UtilityBase : ItemBase
         if ((LerpTimer * 6 * LerpSpeed) >= 1)
         {
             weaponController.itemInUse = false;
-            shieldCollider.SetActive(false);
+            m_shieldEvent.Invoke(false);
         }
     }
 
     private IEnumerator WaitToSheath()
     {
         yield return new WaitForSeconds(itemstats._itemCoolDown);
-        Debug.Log("Resetting Shield");
+        
         isShieldRaised = false;
         LerpTimer = 0;
     }

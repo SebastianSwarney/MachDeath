@@ -10,6 +10,7 @@ namespace Mirror.MachDeath
         public GameTypeManager m_gametype;
         public MachDeathSpawningManager m_spawnManager;
 
+
         public override void Awake()
         {
             base.Awake();
@@ -33,7 +34,6 @@ namespace Mirror.MachDeath
             GameObject newPlayer = Instantiate(playerPrefab);
 
             newPlayer.transform.position = m_spawnManager.NewSpawnPointFFA().position;
-
             PlayerProperties playerProp = newPlayer.GetComponent<PlayerProperties>();
             playerProp.m_playerName = "Ya Boi";
             playerProp.m_playerName = message.m_playerName;
