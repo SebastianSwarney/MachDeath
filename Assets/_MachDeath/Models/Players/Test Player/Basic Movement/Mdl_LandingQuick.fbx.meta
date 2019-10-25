@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 08cbba41920099a42a8e90b2aae5db19
+guid: 38cd2b1aa2673554e82352e1065d2afe
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable:
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Sword And Shield Block (1)
+      name: Jumping Down
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 34
+      lastFrame: 21
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
