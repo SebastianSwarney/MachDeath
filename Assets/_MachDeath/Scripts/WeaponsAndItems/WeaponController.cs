@@ -107,6 +107,8 @@ public class WeaponController : MonoBehaviour
         shieldRegenCounter.gameObject.SetActive(false);
         ShieldObj.SetActive(true);
         ShieldObj.GetComponentInChildren<ShieldHealthCheck>().ResetHealth();
+        ShieldObj.GetComponent<UtilityBase>().Start();
+        ShieldObj.GetComponent<UtilityBase>().LerpTimer = 0;
     }
 
     // Update is called once per frame

@@ -1576,6 +1576,26 @@ PrefabInstance:
       propertyPath: shieldRegenCounter
       value: 
       objectReference: {fileID: 2364568035857679424}
+    - target: {fileID: 6974619383966061458, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: defefaultShield.x
+      value: -1.232
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619383966061458, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: defefaultShield.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6974619383966061458, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: defefaultShield.z
+      value: 0.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546515687746703763, guid: 52421cfb6a952b64ebe4c38078454fa4,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4781392514197262166, guid: 52421cfb6a952b64ebe4c38078454fa4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 52421cfb6a952b64ebe4c38078454fa4, type: 3}

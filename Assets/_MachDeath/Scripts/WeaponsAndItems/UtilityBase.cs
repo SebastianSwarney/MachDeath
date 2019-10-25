@@ -28,11 +28,11 @@ public class UtilityBase : ItemBase
     [HideInInspector]
     public GameObject shieldCollider;
 
-    private Vector3 defefaultShield;
+    public Vector3 defefaultShield;
 
     public ShieldActiveEvent m_shieldEvent;
 
-    void Start()
+    public void Start()
     {
         GetItemType();
         GetItemData();
@@ -50,7 +50,8 @@ public class UtilityBase : ItemBase
     {
         //Get reference to fps Camera and WeaponController//Should be item controller
         base.GetData();
-        defefaultShield = this.transform.localPosition;
+        this.transform.localPosition = defefaultShield;
+        //defefaultShield = this.transform.localPosition;
         LerpTimer = 0;
     }
 
