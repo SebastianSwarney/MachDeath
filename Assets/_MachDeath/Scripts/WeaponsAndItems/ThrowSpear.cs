@@ -37,7 +37,7 @@ namespace Mirror.MachDeath
         public void CmdCreateSpear(Vector3 p_pos, Quaternion p_quat, Vector3 p_dir, float p_speed)
         {
 
-            GameObject newSpear = m_spearPool.NewObject(m_fireSpot.position);
+            /*GameObject newSpear = m_spearPool.NewObject(p_pos);
             //GameObject newSpear = Instantiate(m_spearObject);
             newSpear.SetActive(true);
             newSpear.transform.position = p_pos;
@@ -46,16 +46,25 @@ namespace Mirror.MachDeath
             newSpear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
             newSpear.GetComponent<PooledObject>().m_pooler = m_spearPool;
             NetworkServer.Spawn(newSpear, m_spearPool.assetId);
-            newSpear.GetComponent<Rigidbody>().velocity =  p_dir* p_speed;
-            RpcAssignVelocity(newSpear,p_quat, p_pos, p_dir, p_speed);
+            newSpear.GetComponent<Rigidbody>().velocity =  p_dir* p_speed;*/
+            RpcAssignVelocity(p_quat, p_pos, p_dir, p_speed);
         }
 
         [ClientRpc]
-        private void RpcAssignVelocity(GameObject p_spear, Quaternion p_quat, Vector3 p_pos, Vector3 p_dir, float p_speed)
+        private void RpcAssignVelocity(Quaternion p_quat, Vector3 p_pos, Vector3 p_dir, float p_speed)
         {
-            p_spear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
-            p_spear.GetComponent<Rigidbody>().velocity = p_dir * p_speed;
-            p_spear.GetComponent<PooledObject>().m_pooler = m_spearPool;
+            GameObject newSpear = m_spearPool.NewObject(p_pos);
+            //GameObject newSpear = Instantiate(m_spearObject);
+            newSpear.SetActive(true);
+            newSpear.transform.position = p_pos;
+            newSpear.transform.rotation = p_quat;
+
+            newSpear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
+            newSpear.GetComponent<PooledObject>().m_pooler = m_spearPool;
+
+            newSpear.GetComponent<ProjectileProperties>().m_spearOwner = m_playerProperties;
+            newSpear.GetComponent<Rigidbody>().velocity = p_dir * p_speed;
+            newSpear.GetComponent<PooledObject>().m_pooler = m_spearPool;
         }
         
     }

@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: 07bfdc5a2cfa4184d96a9bff0772f30d
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &3648824628411775770
 MonoBehaviour:
@@ -185,7 +185,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   speed: 0
-  reflections: 1
+  reflections: 4
+  m_maxReflections: 4
   maxReflectionDistance: 300
   m_spearCollision:
     m_PersistentCalls:
@@ -203,6 +204,9 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: SpearCollisionEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+  m_sphereCastRadius: 0.2
+  m_debugging: 1
+  m_debuggingColor: {r: 0, g: 0.048674583, b: 1, a: 1}
 --- !u!114 &7316898696341364597
 MonoBehaviour:
   m_ObjectHideFlags: 0
