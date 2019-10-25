@@ -15,16 +15,25 @@ public class PlayerGraphicsController : MonoBehaviour
 
     private CharacterController m_charController;
 
+    public Transform m_leftShoulder;
+
     public Transform m_lookTarget;
+
+    private ReletiveTransform m_trans;
 
     public GraphicsEvent m_downEvent = new GraphicsEvent();
     public GraphicsEvent m_upEvent = new GraphicsEvent();
+
+    public GraphicsEvent m_spearDownEvent = new GraphicsEvent();
+    public GraphicsEvent m_spearUpEvent = new GraphicsEvent();
 
     private void Start()
     {
         m_animator = GetComponent<Animator>();
         m_movementController = GetComponentInParent<PlayerMovementController>();
         m_charController = GetComponentInParent<CharacterController>();
+
+        m_trans = GetComponentInChildren<ReletiveTransform>();
     }
 
     private void Update()
@@ -41,6 +50,18 @@ public class PlayerGraphicsController : MonoBehaviour
             m_upEvent.Invoke();
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            m_animator.SetBool("Holding Attack", true);
+            m_spearDownEvent.Invoke();
+        }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            m_animator.SetBool("Holding Attack", false);
+            m_spearUpEvent.Invoke();
+        }
+
         Vector3 reletiveVelocity = transform.InverseTransformDirection(m_movementController.m_velocity);
 
         m_animator.SetFloat("Forward", reletiveVelocity.z);
@@ -50,11 +71,15 @@ public class PlayerGraphicsController : MonoBehaviour
 
     public void OnAnimatorIK(int layerIndex)
     {
-        Quaternion q = Quaternion.AngleAxis(m_lookTarget.eulerAngles.x, Vector3.right);
+        Quaternion shoulder = m_animator.GetBoneTransform(HumanBodyBones.LeftShoulder).localRotation;
 
-        m_animator.SetBoneLocalRotation(HumanBodyBones.LeftShoulder, q);
-        m_animator.SetBoneLocalRotation(HumanBodyBones.RightShoulder, q);
-        m_animator.SetBoneLocalRotation(HumanBodyBones.Neck, q);
+
+
+        Quaternion targetRot = Quaternion.AngleAxis(m_lookTarget.eulerAngles.x, Vector3.right);
+
+        //m_animator.SetBoneLocalRotation(HumanBodyBones.LeftShoulder, shoulder * targetRot);
+
+        m_trans.m_localRotation *= targetRot;
     }
 
 }
