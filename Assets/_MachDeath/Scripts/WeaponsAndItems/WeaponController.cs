@@ -81,6 +81,7 @@ public class WeaponController : MonoBehaviour
     {
         //Shut down Shield Here
         var ShieldObj = utility[0].gameObject;
+        itemInUse = false;
         ShieldObj.SetActive(false);
         StartCoroutine(Countdown());
     }

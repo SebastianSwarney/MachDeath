@@ -50,6 +50,8 @@ public class UtilityBase : ItemBase
     {
         //Get reference to fps Camera and WeaponController//Should be item controller
         base.GetData();
+
+        //Hard set shield offset to player
         this.transform.localPosition = defefaultShield;
         //defefaultShield = this.transform.localPosition;
         LerpTimer = 0;
