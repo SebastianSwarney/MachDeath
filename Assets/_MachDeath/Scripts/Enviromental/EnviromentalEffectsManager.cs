@@ -83,6 +83,13 @@ namespace Mirror.MachDeath
                    
                 }
 
+                if(m_effectVarSO.name == "LaunchPad")
+                {
+                    other.transform.GetComponent<PlayerMovementController>().AddToJumpMaxVelocity(m_effectVarSO.m_Force);
+
+
+                }
+
             }
         }
 
@@ -97,6 +104,15 @@ namespace Mirror.MachDeath
                     other.transform.GetComponent<PlayerMovementController>().SpeedBoost(0);
                     m_onSpeedBoost.Invoke();
                 }
+
+
+                if (m_effectVarSO.name == "LaunchPad")
+                {
+                    other.transform.GetComponent<PlayerMovementController>().AddToJumpMaxVelocity(0);
+
+
+                }
+
 
             }
         }

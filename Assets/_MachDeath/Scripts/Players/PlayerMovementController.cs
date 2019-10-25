@@ -622,6 +622,11 @@ public class PlayerMovementController : MonoBehaviour
         m_velocity.y = m_minJumpVelocity;
     }
 
+    private void JumpMaxMultiplied(float p_force)
+    {
+        m_velocity.y = m_maxJumpVelocity * p_force;
+    }
+
     #endregion
 
     #region Wall Run Code
@@ -894,6 +899,23 @@ public class PlayerMovementController : MonoBehaviour
 
         m_isSliding = false;
     }
+
+    #endregion
+
+    #region JumpPad
+
+    public void AddToJumpMaxVelocity(float p_amount)
+    {
+        JumpMaxMultiplied(p_amount);
+    }
+
+
+
+
+
+
+
+
 
     #endregion
 
