@@ -52,8 +52,25 @@ public class SpearRicochet : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-       
+        Debug.DrawLine(m_rb.position, m_rb.position + transform.forward*m_rb.velocity.magnitude*Time.deltaTime, Color.magenta);
+
+        if (reflections > 0)
+        {
+
+
+            RaycastHit hit;
+            if (Physics.Raycast(m_rb.position, transform.forward, out hit, m_rb.velocity.magnitude * Time.deltaTime, collisionMask))
+            {
+
+                float distance = (hit.point - m_rb.position).magnitude - 3f;
+                m_rb.position = (m_rb.velocity.normalized * distance) + m_rb.position;
+                print("Hit");
+
+
+            }
+        }
         DetectHit();
+
         transform.LookAt(transform.position + m_rb.velocity);
     }
 

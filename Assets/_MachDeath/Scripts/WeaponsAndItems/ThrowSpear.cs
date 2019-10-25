@@ -18,6 +18,7 @@ namespace Mirror.MachDeath
 
         private ObjectPooler_Network m_spearPool;
 
+        public Vector3 m_playerVel;
 
         private void Start()
         {
@@ -26,11 +27,15 @@ namespace Mirror.MachDeath
             m_player = GetComponent<PlayerMovementController>();
         }
 
+        private void Update()
+        {
+            m_playerVel = m_player.m_velocity;
+        }
         public void SpawnSpear()
         {
             if (!isLocalPlayer) return;
             float percent = m_player.m_velocity.magnitude / m_player.m_maxMovementSpeed;
-
+            
             CmdCreateSpear(m_fireSpot.position, m_fireSpot.rotation, m_fireSpot.forward, Mathf.Lerp(m_minSpeed, m_maxSpeed, percent));
         }
         [Command]
