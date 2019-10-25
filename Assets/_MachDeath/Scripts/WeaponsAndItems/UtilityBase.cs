@@ -1,28 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
+[System.Serializable]
+public class ShieldActiveEvent : UnityEngine.Events.UnityEvent<bool> { }
 public class UtilityBase : ItemBase
 {
-    [SerializeField]
+    [HideInInspector]
     private Transform shieldActive, shieldInactive;
 
-    [SerializeField]
-    private float LerpTimer;
+    [HideInInspector]
+    public float LerpTimer;
 
-    [SerializeField]
-    private float LerpSpeed, shieldOffset;
+    public float LerpSpeed, shieldOffset;
 
-    [SerializeField]
-    private AnimationCurve animationCurve;
+    [HideInInspector]
+    public string spearTag;
 
-    [SerializeField]
-    private bool isShieldRaised;
+    public GameObject spearPrefab;
 
-    [SerializeField]
-    private GameObject shieldCollider;
+    public AnimationCurve animationCurve;
+
+    [HideInInspector]
+    public bool isShieldRaised;
+
+    [HideInInspector]
+    public GameObject shieldCollider;
 
     private Vector3 defefaultShield;
+
+    public ShieldActiveEvent m_shieldEvent;
+
+    //Shield Regen Params
+    public float shieldRegenerateTimer;
+
+    public Image shieldRegenCounter;
 
     void Start()
     {
@@ -31,6 +44,8 @@ public class UtilityBase : ItemBase
         isShieldRaised = false;
         shieldCollider = transform.GetChild(0).gameObject;
         shieldCollider.SetActive(false);
+        spearTag = spearPrefab.gameObject.tag;
+        shieldRegenCounter.gameObject.SetActive(false);
     }
     protected override void GetItemType()
     {
@@ -48,11 +63,10 @@ public class UtilityBase : ItemBase
     {
         if (!isShieldRaised && !weaponController.itemInUse)
         {
-            Debug.Log("Using Shield");
             LerpTimer = 0;
             isShieldRaised = true;
             weaponController.itemInUse = true;
-            shieldCollider.SetActive(true);
+            m_shieldEvent.Invoke(true);
             //this.transform.position = Vector3.Lerp(defefaultShield, defefaultShield + offset, animationCurve.Evaluate((LerpTimer * LerpSpeed)));
         }
     }
@@ -90,21 +104,43 @@ public class UtilityBase : ItemBase
     {
         LerpTimer += Time.deltaTime;
         Vector3 offset = new Vector3(shieldOffset, 0, 0);
-        this.transform.localPosition = Vector3.Lerp(this.transform.localPosition, defefaultShield, animationCurve.Evaluate(((LerpTimer) * 6  * LerpSpeed)));
+        this.transform.localPosition = Vector3.Lerp(this.transform.localPosition, defefaultShield, animationCurve.Evaluate(((LerpTimer) * 6 * LerpSpeed)));
 
         if ((LerpTimer * 6 * LerpSpeed) >= 1)
         {
             weaponController.itemInUse = false;
-            shieldCollider.SetActive(false);
+            m_shieldEvent.Invoke(false);
         }
     }
 
     private IEnumerator WaitToSheath()
     {
         yield return new WaitForSeconds(itemstats._itemCoolDown);
-        Debug.Log("Resetting Shield");
+
         isShieldRaised = false;
         LerpTimer = 0;
+    }
+
+    public IEnumerator Countdown()
+    {
+        float duration = shieldRegenerateTimer;
+        // 3 seconds you can change this to
+        //to whatever you want
+        float totalTime = 0;
+
+        while (totalTime <= duration)
+        {
+            Debug.Log("Shield Regenerate Timer Started!");
+            shieldRegenCounter.gameObject.SetActive(true);
+            shieldRegenCounter.fillAmount = totalTime / duration;
+            totalTime += Time.deltaTime;
+            //var integer = (int)totalTime; /* choose how to quantize this */
+            /* convert integer to string and assign to text */
+            yield return null;
+        }
+
+        gameObject.SetActive(true);
+        gameObject.GetComponentInChildren<ShieldHealthCheck>().ResetHealth();
     }
 }
 

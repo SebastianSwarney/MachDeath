@@ -165,7 +165,8 @@ public class PlayerMovementController : MonoBehaviour
 
     private float m_currentWallClimbSpeed;
     private bool m_isWallClimbing;
-    private Vector3 m_localWallFacingVector;
+    [HideInInspector]
+    public Vector3 m_localWallFacingVector;
     [Space]
     #endregion
 

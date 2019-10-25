@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 3898591385045717465}
   - component: {fileID: 3898591385045717466}
   - component: {fileID: 3898591385045717467}
-  - component: {fileID: 3898591385045717468}
   - component: {fileID: 3763494305332652728}
   - component: {fileID: -4854091269776262107}
   - component: {fileID: 3886228427902575145}
   - component: {fileID: -5232417424256962467}
   - component: {fileID: 3648824628411775770}
+  - component: {fileID: 7316898696341364597}
+  - component: {fileID: 3016957882438555084}
   m_Layer: 10
   m_Name: SpearPrefab
   m_TagString: Untagged
@@ -86,20 +87,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &3898591385045717468
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3898591385045717469}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.24
-  m_Height: 0.86
-  m_Direction: 2
-  m_Center: {x: 0, y: 0, z: -0.48}
 --- !u!54 &3763494305332652728
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -131,6 +118,28 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_spearDamage: 100
+  m_spearCollisionEvents:
+    m_spearCollisionEvent:
+      m_PersistentCalls:
+        m_Calls: []
+      m_TypeName: Mirror.MachDeath.SpearCollisionEvents, Mirror.MachDeath, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+    m_destroySpearEvent:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7316898696341364597}
+          m_MethodName: 
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: Mirror.MachDeath.SpearCollisionEvents, Mirror.MachDeath, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
 --- !u!114 &3886228427902575145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverOnly: 0
   localPlayerAuthority: 0
-  m_AssetId: c2eb00a9c1b7ea24ca920833a620b372
+  m_AssetId: 
   m_SceneId: 0
 --- !u!114 &3648824628411775770
 MonoBehaviour:
@@ -176,22 +185,57 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   speed: 0
-  reflections: 5
+  reflections: 4
+  m_maxReflections: 4
   maxReflectionDistance: 300
---- !u!136 &1935287189554179808
+  m_spearCollision:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7316898696341364597}
+        m_MethodName: DestroyObject
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: SpearCollisionEvent, Mirror.MachDeath, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  m_sphereCastRadius: 0.2
+  m_debugging: 1
+  m_debuggingColor: {r: 0, g: 0.048674583, b: 1, a: 1}
+--- !u!114 &7316898696341364597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3898591385045717469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84dbe5f6fc9c44c47ab2f69c9f04d846, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  m_pooler: {fileID: 0}
+--- !u!136 &3016957882438555084
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4988714205647760431}
+  m_GameObject: {fileID: 3898591385045717469}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.008021042
-  m_Height: 0.1
-  m_Direction: 1
-  m_Center: {x: -0.000000012318367, y: -0.09, z: 0.000000006970481}
+  m_Enabled: 0
+  m_Radius: 0.5
+  m_Height: 1.36
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: -0.65}
 --- !u!1 &5794422269456411785
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,12 +380,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f86e17d36cdbc1f46947e81eafaf8089, type: 3}
---- !u!1 &4988714205647760431 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: f86e17d36cdbc1f46947e81eafaf8089,
-    type: 3}
-  m_PrefabInstance: {fileID: 3898591386816689446}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8313681176380481084 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: f86e17d36cdbc1f46947e81eafaf8089,
