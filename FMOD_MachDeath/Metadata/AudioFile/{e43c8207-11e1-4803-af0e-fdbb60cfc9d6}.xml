@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{e43c8207-11e1-4803-af0e-fdbb60cfc9d6}">
+		<property name="assetPath">
+			<value>SoundEffects/JavelinToss/Arm Whoosh 01.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.60666666666666669</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{00ad567c-03fd-461a-b8a9-618ee22b2c22}</destination>
+		</relationship>
+	</object>
+</objects>

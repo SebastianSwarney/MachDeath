@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{691312c5-2869-4d6f-8e1f-f482d7c7077d}">
+		<property name="assetPath">
+			<value>SoundEffects/JavelinDeflect/JavelinDeflect4.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.60206349206349208</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{00ad567c-03fd-461a-b8a9-618ee22b2c22}</destination>
+		</relationship>
+	</object>
+</objects>

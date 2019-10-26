@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{afadd31d-973c-4439-95d8-fe7088a8290e}">
+		<property name="assetPath">
+			<value>SoundEffects/JavelinInMotion/WeldingSparks3.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.73009070294784584</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{00ad567c-03fd-461a-b8a9-618ee22b2c22}</destination>
+		</relationship>
+	</object>
+</objects>
