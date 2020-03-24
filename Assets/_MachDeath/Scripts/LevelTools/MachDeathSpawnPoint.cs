@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class MachDeathSpawnPoint : MonoBehaviour
 {
-
-    public PlayerProperties.PlayerTeam m_spawnPointTeam;
     public float m_playerDetectionRadius;
     public LayerMask m_playerMask;
     [Header("Debugging")]

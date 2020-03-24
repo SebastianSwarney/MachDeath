@@ -224,6 +224,11 @@ public class PlayerMovementController : MonoBehaviour
         CalculateJump();
     }
 
+    private void Update()
+    {
+        PerformController();
+    }
+
     public void PerformController()
     {
         CalculateCurrentSpeed();

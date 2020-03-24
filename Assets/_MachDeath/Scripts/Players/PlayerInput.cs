@@ -18,9 +18,16 @@ public class PlayerInput : MonoBehaviour
         m_playerInputController = ReInput.players.GetPlayer(m_playerId);
     }
 
+    private void Update()
+    {
+        GetInput();
+    }
+
     public void GetInput()
     {
+        
         Vector2 movementInput = new Vector2(m_playerInputController.GetAxis("MoveHorizontal"), m_playerInputController.GetAxis("MoveVertical"));
+        
         m_playerMovementController.SetMovementInput(movementInput);
 
         if (Input.GetKeyDown(KeyCode.P))
