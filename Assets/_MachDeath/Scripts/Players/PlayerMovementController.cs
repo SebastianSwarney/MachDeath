@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Photon.Pun;
 
 [System.Serializable]
 public class PlayerControllerEvent : UnityEvent { }
@@ -205,10 +206,13 @@ public class PlayerMovementController : MonoBehaviour
 
     private float m_currentSpeedBoost;
 
+    private PhotonView m_photonView;
+
     private void Start()
     {
         m_characterController = GetComponent<CharacterController>();
         m_rigidbody = GetComponent<Rigidbody>();
+        m_photonView = GetComponent<PhotonView>();
 
         CalculateJump();
         LockCursor();
@@ -224,10 +228,7 @@ public class PlayerMovementController : MonoBehaviour
         CalculateJump();
     }
 
-    private void Update()
-    {
-        PerformController();
-    }
+
 
     public void PerformController()
     {

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_MachDeath/Scenes/Scn_PlayerNetwork.unity
-    guid: cf65675105eb0954fb7c6535d1c20bf2
+    path: Assets/_MachDeath/Scenes/Menus/MainMenu.unity
+    guid: 9ba97dc0cb048c943b43bf90a55fb9f6
+  - enabled: 1
+    path: Assets/_MachDeath/Scenes/Scn_ContructionMap_Progress.unity
+    guid: 38e035005bf020341b99dfffc66ebbf3
   m_configObjects: {}

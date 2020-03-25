@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d001837da5cbd444a1637737404f27b, type: 3}
+  m_Name: Bullet_Automatic_Fast
+  m_EditorClassIdentifier: 
+  m_bullet: {fileID: 8671785772036484533, guid: c2a4f78e4c2dee348810c99405d10ad1,
+    type: 3}
+  m_bulletSpeed: 100
+  m_bulletDamage: 15
