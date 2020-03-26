@@ -4,6 +4,8 @@ using UnityEngine;
 using Rewired;
 using Photon.Pun;
 
+[System.Serializable]
+public class PlayerInputEvent : UnityEngine.Events.UnityEvent { }
 public class PlayerInput : MonoBehaviour
 {
 
@@ -19,11 +21,16 @@ public class PlayerInput : MonoBehaviour
     [Header("Photon")]
     public GameObject m_camera;
     private PhotonView m_photonView;
-    
+
+    public PlayerInputEvent m_sprayEvent;
+    public KeyCode m_sprayKeyCode;
+    public KeyCode m_toggleInput;
+    private bool m_hasInput = true;
 
     private void Start()
     {
-        
+
+        Cursor.lockState = CursorLockMode.Locked;
         m_playerMovementController = GetComponent<PlayerMovementController>();
         m_playerInputController = ReInput.players.GetPlayer(m_playerId);
         m_photonView = GetComponent<PhotonView>();
@@ -44,6 +51,19 @@ public class PlayerInput : MonoBehaviour
 
     public void GetInput()
     {
+
+        if (Input.GetKeyDown(m_sprayKeyCode))
+        {
+            m_sprayEvent.Invoke();
+        }
+        if (Input.GetKeyDown(m_toggleInput))
+        {
+            m_hasInput = !m_hasInput;
+            Cursor.lockState = (m_hasInput) ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !m_hasInput;
+        }
+
+        if (!m_hasInput) return;
 
         Vector2 movementInput = new Vector2(m_playerInputController.GetAxis("MoveHorizontal"), m_playerInputController.GetAxis("MoveVertical"));
 
@@ -86,5 +106,7 @@ public class PlayerInput : MonoBehaviour
         {
             m_weaponHolder.ShootGun();
         }
+
+
     }
 }

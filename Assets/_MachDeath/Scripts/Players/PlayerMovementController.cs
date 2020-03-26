@@ -215,7 +215,6 @@ public class PlayerMovementController : MonoBehaviour
         m_photonView = GetComponent<PhotonView>();
 
         CalculateJump();
-        LockCursor();
 
         m_currentMovementSpeed = m_baseMovementSpeed;
         m_jumpBufferTimer = m_jumpBufferTime;
@@ -271,10 +270,7 @@ public class PlayerMovementController : MonoBehaviour
     #endregion
 
     #region Camera Code
-    private void LockCursor()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
+
 
     public void ResetCamera()
     {

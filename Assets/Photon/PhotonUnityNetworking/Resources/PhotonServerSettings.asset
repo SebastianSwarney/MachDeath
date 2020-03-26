@@ -34,5 +34,7 @@ MonoBehaviour:
   - CreateRaycast
   - FireBullet
   - RPCFireBullet
+  - LoadTexture
+  - RPC_SpawnOnServer
   DisableAutoOpenWizard: 1
   ShowSettings: 1

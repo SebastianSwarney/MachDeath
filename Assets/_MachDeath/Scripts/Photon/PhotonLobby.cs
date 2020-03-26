@@ -62,4 +62,10 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         m_joinButton.SetActive(false);
         PhotonNetwork.LeaveRoom();
     }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        base.OnDisconnected(cause);
+        Debug.Log("Disconnect");
+    }
 }
